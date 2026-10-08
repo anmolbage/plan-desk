@@ -1,0 +1,2121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Working tool: customer pitch, key terms and return calculators for SBI Life individual plans. Not an official SBI Life illustration.">
+<meta name="theme-color" content="#F4F6F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0A0F0C" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Plan Desk">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
+/* Base reset the page expects. */
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>SBI Life Plan Desk</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400..800&display=swap">
+<style>
+/* Layout: inputs in a left rail, results to the right; one column on phones.
+   Look: flat and quiet. White surfaces on a soft sage canvas, hairline borders, no shadows, pill controls, one typeface.
+   One deep-pine band for the pitch. Lime is reserved for the selected plan, key figures and the primary button. */
+:root{
+  --bg:#F4F6F1; --surface:#FFFFFF; --sunk:#F3F5F0; --ink:#0F1A14; --muted:#5E6B63; --line:#E2E7DE;
+  --accent:#0A7A45; --accent-ink:#FFFFFF;
+  --lime:#C2F36B; --lime-ink:#0C3B2A; --sel:#0C3B2A; --sel-ink:#FFFFFF;
+  --lo:#2F6BDE; --hi:#0A8A4E; --past:#7A4CD9; --x:#B56A00;
+  --band:#0C3B2A; --band-ink:#F3F8F2; --band-mute:#B5C9BC; --band-tile:rgba(255,255,255,.07); --band-hi:#C2F36B;
+  --ok:#0A6B3D; --bad:#D03A2F; --warn:#8A5A00; --ok-bg:#E6F6E4; --bad-bg:#FDECEA; --warn-bg:#FFF4D6;
+  --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0A0F0C; --surface:#121915; --sunk:#0D130F; --ink:#ECF2ED; --muted:#96A39B; --line:#252F29;
+  --accent:#B9EE66; --accent-ink:#0C2A1D;
+  --lime:#C2F36B; --lime-ink:#0C3B2A; --sel:#ECF2ED; --sel-ink:#0A0F0C;
+  --lo:#7FA8FF; --hi:#5FDB95; --past:#B79BFF; --x:#F2B95C;
+  --band:#10382A; --band-ink:#F3F8F2; --band-mute:#AFC6B7; --band-tile:rgba(255,255,255,.06); --band-hi:#C2F36B;
+  --ok:#7FE0A4; --bad:#FF8F85; --warn:#F0C262; --ok-bg:#10281B; --bad-bg:#3A1714; --warn-bg:#33280E;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0A0F0C; --surface:#121915; --sunk:#0D130F; --ink:#ECF2ED; --muted:#96A39B; --line:#252F29;
+  --accent:#B9EE66; --accent-ink:#0C2A1D;
+  --lime:#C2F36B; --lime-ink:#0C3B2A; --sel:#ECF2ED; --sel-ink:#0A0F0C;
+  --lo:#7FA8FF; --hi:#5FDB95; --past:#B79BFF; --x:#F2B95C;
+  --band:#10382A; --band-ink:#F3F8F2; --band-mute:#AFC6B7; --band-tile:rgba(255,255,255,.06); --band-hi:#C2F36B;
+  --ok:#7FE0A4; --bad:#FF8F85; --warn:#F0C262; --ok-bg:#10281B; --bad-bg:#3A1714; --warn-bg:#33280E;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:28px 56px;display:flex;flex-direction:column;gap:24px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-weight:800;font-size:clamp(24px,3.6vw,32px);line-height:1.1;letter-spacing:-.025em}
+h2{font-weight:700;font-size:19px;letter-spacing:-.02em}
+h3{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+p{margin:0}
+a{color:var(--accent);text-underline-offset:3px}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+
+/* header and plan picker */
+header.top{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between}
+.brand{display:flex;gap:14px;align-items:center;min-width:0}
+.mark{flex:none;width:46px;height:46px;border-radius:15px;background:var(--lime)}
+.mark rect{fill:var(--lime-ink)}
+header.top .id{display:flex;flex-direction:column;gap:4px;min-width:0}
+header.top .meta{font-size:13px;line-height:1.45;color:var(--muted);max-width:92ch}
+.stack{display:flex;flex-direction:column;gap:24px;min-width:0}
+.picker{display:flex;flex-direction:column;gap:12px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{font-size:13.5px;font-weight:600;padding:8px 15px;border-radius:999px;border:0;background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--muted)}
+.tabs button:hover{color:var(--ink)}
+.tabs button[aria-pressed=true]{background:var(--sel);color:var(--sel-ink)}
+.plist{display:flex;flex-wrap:wrap;gap:8px}
+.plist button{font-size:14px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 16px;text-align:left}
+.plist button:hover{border-color:var(--ink)}
+.plist button[aria-pressed=true]{background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
+.ptag{font-size:13.5px;color:var(--muted)}
+.ptag b{color:var(--ink);font-weight:700}
+
+/* pitch band */
+.pitch{background:var(--band);color:var(--band-ink);border-radius:28px;padding:32px;display:flex;flex-direction:column;gap:20px}
+.pitch h2{font-size:clamp(22px,3vw,28px);font-weight:800;letter-spacing:-.03em}
+.pitch .lead{font-size:17px;line-height:1.55;max-width:74ch}
+.pitch .lead b{font-weight:800;color:var(--band-hi);white-space:nowrap}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:920px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ptile{background:var(--band-tile);border-radius:20px;padding:18px 20px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.ptile .fig{font-weight:800;font-size:34px;line-height:1.05;letter-spacing:-.03em;color:var(--band-hi)}
+.ptile h3{color:var(--band-ink);text-transform:none;letter-spacing:-.01em;font-size:15.5px;font-weight:700}
+.ptile p{font-size:13.5px;line-height:1.5;color:var(--band-mute)}
+.pitch .also{font-size:13.5px;line-height:1.55;color:var(--band-mute);max-width:95ch}
+.pitch .also b{color:var(--band-ink);font-weight:700}
+
+/* panels */
+#glance-links{display:flex;flex-wrap:wrap;gap:6px 18px}
+.grid{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:24px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.results{display:flex;flex-direction:column;gap:16px;min-width:0}
+.headrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+
+/* form */
+.presets{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.presets span{font-size:13px;color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.field .lab{font-size:13px;font-weight:600}
+.field .hint{font-size:12.5px;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+input[type=number],select{width:100%;font:inherit;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible,summary:focus-visible,.seg label:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;gap:4px;padding:4px;border:1px solid var(--line);border-radius:14px;background:var(--sunk)}
+.seg label{flex:1;text-align:center;padding:7px 6px;font-size:13.5px;font-weight:600;cursor:pointer;color:var(--muted);border-radius:10px}
+.seg label:hover{color:var(--ink)}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label:has(input:checked){background:var(--sel);color:var(--sel-ink)}
+.seg.auto label{flex:1 1 auto;padding-inline:10px;white-space:nowrap}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px}
+.check input{margin-top:3px;accent-color:var(--accent);width:16px;height:16px;flex:none}
+button{font:inherit;cursor:pointer}
+.btn{font-size:13.5px;font-weight:600;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:7px 14px}
+.btn:hover{border-color:var(--ink)}
+.btn.ghost{background:transparent;border-style:dashed}
+.fundrow select{font-size:14px;padding-inline:10px 4px}
+.fundrow{display:grid;grid-template-columns:minmax(0,1fr) 72px 36px;gap:6px;align-items:stretch}
+.fundrow .x{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:12px;line-height:1}
+.fundrow .x:hover{color:var(--bad);border-color:var(--bad)}
+.fundlist{display:flex;flex-direction:column;gap:6px}
+.fundfoot{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.fundrate{display:flex;flex-direction:column;gap:6px}
+.fundrate .otherrate{grid-template-columns:minmax(0,1fr) 140px}
+.otherrate{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px;align-items:center}
+.otherrate label{font-weight:400;color:var(--muted)}
+details.adv{border-top:1px solid var(--line);padding-top:14px}
+details.adv summary{cursor:pointer;font-size:13.5px;font-weight:600}
+details.adv .inner{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+
+/* status */
+.status{border-radius:16px;padding:14px 18px;font-size:14px;display:flex;flex-direction:column;gap:2px}
+.status.ok{background:var(--ok-bg);color:var(--ok)}
+.status.bad{background:var(--bad-bg);color:var(--bad)}
+.status ul{margin:0;padding-left:18px}
+.status strong{font-weight:700}
+
+/* scenario cards */
+.scen{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.card{container-type:inline-size;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.card .tag{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--c);background:color-mix(in srgb,var(--c) 11%,transparent);padding:4px 11px;border-radius:999px}
+.card .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.card .big{font-weight:800;font-size:clamp(22px,12.5cqi,36px);line-height:1.1;letter-spacing:-.03em;margin-top:8px;overflow-wrap:anywhere}
+.card .sub{font-size:13px;color:var(--muted)}
+.card dl{display:grid;grid-template-columns:1fr auto;gap:5px 12px;margin:10px 0 0;font-size:13.5px;border-top:1px solid var(--line);padding-top:12px}
+.card dt{color:var(--muted)}
+.card dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.c-lo{--c:var(--lo)} .c-hi{--c:var(--hi)} .c-x{--c:var(--x)} .c-f{--c:var(--past)}
+.recon{font-size:12.5px;color:var(--muted)}
+
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.facts div{background:var(--surface);padding:14px 18px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.facts span{font-size:12.5px;color:var(--muted)}
+.facts b{font-weight:700;font-size:15px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+/* tables */
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+thead th{background:var(--sunk);font-weight:700;font-size:12.5px;color:var(--muted);position:sticky;top:0}
+tbody td{font-weight:500;font-variant-numeric:tabular-nums}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-variant-numeric:tabular-nums;font-weight:800;background:var(--sunk);border-bottom:0;border-top:1px solid var(--line)}
+tr.total td{font-weight:800;background:var(--sunk)}
+.la{display:inline-block;font-size:11px;font-weight:700;color:var(--lime-ink);background:var(--lime);border-radius:999px;padding:0 8px;margin-left:6px}
+th.lo,td.lo-h{color:var(--lo)} th.hi{color:var(--hi)}
+.neg{color:var(--bad)} .pos{color:var(--ok)}
+button.ret{font-variant-numeric:tabular-nums;font-size:13.5px;font-weight:600;color:inherit;background:transparent;border:0;border-bottom:1px dashed var(--accent);padding:0 1px;border-radius:0}
+button.ret:hover{color:var(--accent)}
+#perf td.fund{white-space:normal;min-width:150px}
+#perf td.fund small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+#perf td.fund b{font-weight:600}
+#perf tr.insplit td.fund b{font-weight:700}
+#perf tr.insplit td.fund b::after{content:"in your split";font-size:11px;font-weight:700;color:var(--lime-ink);background:var(--lime);border-radius:999px;padding:1px 8px;margin-left:6px;white-space:nowrap}
+#perf td.fund a{color:inherit;text-decoration-color:var(--line);text-underline-offset:3px}
+#perf td.fund a:hover{color:var(--accent)}
+
+/* reference blocks */
+details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing:-.02em}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;padding-top:14px}
+.refgrid section{display:flex;flex-direction:column;gap:8px;min-width:0}
+.refgrid td,.refgrid th{white-space:normal}
+.docs ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.docs ul.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px}
+.docs li small{display:block;color:var(--muted);font-size:12.5px}
+.docs.refgrid{padding-top:0}
+.glance{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 32px;margin:0}
+@media (max-width:760px){.glance{grid-template-columns:minmax(0,1fr)}}
+.glance>div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.glance dt{color:var(--muted);font-weight:500}
+.glance dd{margin:0;font-weight:500}
+@media (max-width:420px){.glance>div{grid-template-columns:minmax(0,1fr);gap:2px}}
+.kv{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:4px 14px;font-size:13.5px;margin:0}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.notes{display:flex;flex-direction:column;gap:8px;font-size:13.5px;max-width:78ch}
+.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.risk{font-size:12.5px;color:var(--muted);max-width:90ch}
+#nocalc .btn{display:inline-block;background:var(--lime);border-color:var(--lime);color:var(--lime-ink);font-size:14px;font-weight:700;padding:11px 20px;text-decoration:none}
+#nocalc .btn:hover{filter:brightness(.96)}
+
+@media (max-width:560px){
+  .wrap{gap:18px;padding-block:20px 40px}
+  .stack{gap:18px}
+  .pgrid{grid-template-columns:minmax(0,1fr)}
+  .pitch{padding:24px 18px;border-radius:24px;gap:16px}
+  .pitch .lead{font-size:16px}
+  .ptile{border-radius:18px;padding:16px 18px}
+  .panel{padding:18px;border-radius:20px}
+  .card{padding:18px;border-radius:20px}
+}
+@media (max-width:520px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+    <svg class="mark" viewBox="0 0 48 48" aria-hidden="true"><rect class="b" x="11" y="26" width="7" height="10" rx="1.5"/><rect class="b" x="20.5" y="20" width="7" height="16" rx="1.5"/><rect class="g" x="30" y="12" width="7" height="24" rx="1.5"/></svg>
+    <div class="id">
+      <h1>SBI Life Plan Desk</h1>
+      <div class="meta">26 individual plans · customer pitch, key terms and documents for each · return calculator for the six unit-linked plans · working tool, not an official illustration</div>
+    </div>
+    </div>
+  </header>
+
+  <nav class="picker" aria-label="Choose a plan">
+    <div class="tabs" id="cats"></div>
+    <div class="plist" id="plist"></div>
+    <p class="ptag" id="ptag"></p>
+  </nav>
+
+  <section class="pitch" id="pitch" aria-label="What this plan does for you"></section>
+
+  <section class="panel" id="glance">
+    <div class="headrow">
+      <h2>Plan at a glance</h2>
+      <span class="small muted num" id="glance-sub"></span>
+    </div>
+    <dl class="glance" id="glance-dl"></dl>
+    <p class="small" id="glance-links"></p>
+  </section>
+
+  <section class="panel" id="nocalc" hidden>
+    <h2>Figures for your customer</h2>
+    <p id="nocalc-text" style="max-width:75ch"></p>
+    <p><a class="btn" id="nocalc-link" target="_blank" rel="noopener" href="#">Open SBI Life's calculator for this plan</a></p>
+  </section>
+
+  <div id="calc" class="stack">
+  <div class="grid">
+    <form class="panel" id="form" autocomplete="off">
+      <h2>Policy inputs</h2>
+      <div class="presets" id="presets"></div>
+
+      <div class="field">
+        <span class="lab">Plan type</span>
+        <div class="seg" role="radiogroup" aria-label="Plan type">
+          <label id="lab-regular"><input type="radio" name="plan" id="plan-regular" value="regular" checked>Regular</label>
+          <label id="lab-limited"><input type="radio" name="plan" id="plan-limited" value="limited">Limited</label>
+          <label id="lab-single"><input type="radio" name="plan" id="plan-single" value="single">Single</label>
+        </div>
+      </div>
+
+      <div class="field" id="opt-field" hidden>
+        <span class="lab" id="opt-label"></span>
+        <div class="seg" role="radiogroup" id="opt-seg"></div>
+        <span class="hint" id="opt-hint"></span>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="age" id="age-label">Age at entry</label>
+          <input type="number" id="age" min="8" max="55" step="1" value="30">
+          <span class="hint" id="age-hint">Last birthday</span>
+        </div>
+        <div class="field">
+          <label for="pt">Policy term</label>
+          <select id="pt"></select>
+          <span class="hint" id="pt-hint">10 to 30 years</span>
+        </div>
+      </div>
+
+      <div class="field" id="child-field" hidden>
+        <label for="child-age">Child's age at entry</label>
+        <input type="number" id="child-age" min="0" max="17" step="1" value="5">
+        <span class="hint">0 to 17. The child must be 18 to 25 when the plan matures.</span>
+      </div>
+
+      <div class="row2" id="pay-row">
+        <div class="field" id="ppt-field">
+          <label for="ppt">Premium paying term</label>
+          <select id="ppt"></select>
+          <span class="hint" id="ppt-hint">Same as policy term</span>
+        </div>
+        <div class="field" id="mode-field">
+          <label for="mode">Frequency</label>
+          <select id="mode">
+            <option value="yearly">Yearly</option>
+            <option value="half">Half-yearly</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="premium" id="premium-label">Annualized premium (₹)</label>
+        <input type="number" id="premium" min="600000" step="10000" value="1500000">
+        <span class="hint num" id="premium-echo"></span>
+      </div>
+
+      <p class="hint" id="strategy-note" hidden>Growth strategy: your money is split between the Equity Fund and the Bond Fund automatically, so there is no fund split to choose.</p>
+      <div class="field" id="funds-field">
+        <span class="lab">Fund split</span>
+        <div class="fundlist" id="funds"></div>
+        <div class="fundfoot">
+          <button class="btn ghost" type="button" id="add-fund">Add fund</button>
+          <span class="small num" id="fund-total"></span>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lab">Assumed rate of return</span>
+        <div class="seg auto" role="group" aria-label="Assumed rate of return">
+          <label><input type="checkbox" id="rate-4" checked>4%</label>
+          <label><input type="checkbox" id="rate-8" checked>8%</label>
+          <label><input type="checkbox" id="rate-fund">Fund history</label>
+          <label><input type="checkbox" id="rate-other">Other</label>
+        </div>
+        <div class="fundrate" id="fund-wrap" hidden>
+          <div class="otherrate">
+            <label for="rate-basis">Past returns of your fund split over</label>
+            <select id="rate-basis">
+              <option value="y10">10 years</option>
+              <option value="y5">5 years</option>
+              <option value="y3">3 years</option>
+              <option value="si">Since inception</option>
+            </select>
+          </div>
+          <span class="hint" id="fund-rate-note"></span>
+        </div>
+        <div class="otherrate" id="other-wrap" hidden>
+          <label for="rate-custom">Your rate (% p.a.)</label>
+          <input type="number" id="rate-custom" min="-10" max="25" step="0.01" value="10">
+        </div>
+        <span class="hint">Pick one or more. 4% and 8% are the standard illustration rates. Fund history works the rate out from what your chosen funds have returned in the past. Anything other than 4% and 8% is for your own analysis.</span>
+      </div>
+
+      <label class="check" for="staff" id="staff-wrap">
+        <input type="checkbox" id="staff">
+        <span id="staff-text">Staff case: add the staff additional allocation.</span>
+      </label>
+
+      <details class="adv">
+        <summary>Assumptions</summary>
+        <div class="inner">
+          <div class="field">
+            <label for="mort">Mortality charge level (% of IALM 2012-14)</label>
+            <input type="number" id="mort" min="0" max="300" step="5" value="90">
+            <span class="hint" id="mort-hint">The brochure does not print the mortality rate table.</span>
+          </div>
+          <div class="field">
+            <label for="gst">GST on charges (%)</label>
+            <input type="number" id="gst" min="0" max="28" step="1" value="0">
+            <span class="hint">0 since 22 Sep 2025. Use 18 to reconcile older illustrations.</span>
+          </div>
+        </div>
+      </details>
+    </form>
+
+    <div class="results">
+      <div id="status" class="status ok" role="status"></div>
+      <div class="scen" id="scen"></div>
+      <div class="facts" id="facts"></div>
+
+      <section class="panel">
+        <h2>Where the money goes</h2>
+        <div class="scroll"><table id="bridge"></table></div>
+        <p class="small muted">Fund management charge is taken inside the daily NAV, so it never appears as a line on the unit statement. It is shown here so the full cost is visible.</p>
+      </section>
+
+      <section class="panel" id="perf-panel">
+        <div class="headrow">
+          <h2>Fund performance</h2>
+          <span class="small muted">Snapshot fetched 8 Oct 2026</span>
+        </div>
+        <p class="small muted">Past NAV returns, % a year. Tap a 3-year or longer figure to use it as your rate of return. NAV returns are already after the fund management charge, so the charge is added back before the figure is used as the rate.</p>
+        <div class="scroll"><table id="perf"></table></div>
+        <p class="small" id="perf-msg" role="status"></p>
+        <p class="small muted">1 yr is an absolute return; longer periods are compound annual rates. 1 yr, 3 yr and since-inception figures are from SBI Life's monthly fund factsheets at the date shown for each fund. 5 yr and 10 yr are Value Research figures as shown on Policybazaar in early October 2026. Past performance is not indicative of future performance.</p>
+      </section>
+
+      <section class="panel">
+        <div class="headrow">
+          <h2>Year-by-year</h2>
+          <div class="tabs" id="tabs"></div>
+        </div>
+        <div class="scroll"><table id="yearly"></table></div>
+        <p class="small muted" id="yearly-note"></p>
+      </section>
+    </div>
+  </div>
+
+  <div id="spp-extra" class="stack">
+  <section class="panel">
+    <details class="ref">
+      <summary>Full charges and conditions</summary>
+      <div class="refgrid">
+        <section>
+          <h3>Eligibility</h3>
+          <dl class="kv">
+            <dt>Entry age</dt><dd>8 to 55 (Single: 13 to 55)</dd>
+            <dt>Maturity age</dt><dd>18 to 70</dd>
+            <dt>Regular pay</dt><dd>Term 10–30, pay throughout</dd>
+            <dt>Limited pay</dt><dd>Term 15–30, pay 5 to term − 1</dd>
+            <dt>Single pay</dt><dd>Term 5–30</dd>
+            <dt>Minimum premium</dt><dd>₹6,00,000 yearly · ₹3,00,000 half-yearly · ₹1,50,000 quarterly · ₹50,000 monthly · ₹6,00,000 single</dd>
+            <dt>Sum assured</dt><dd>7 × annualized premium; 1.25 × single premium</dd>
+          </dl>
+        </section>
+        <section>
+          <h3>Charges</h3>
+          <dl class="kv">
+            <dt>Premium allocation</dt><dd>2.5% in years 1–5, nil from year 6. Single: 2%</dd>
+            <dt>Policy administration</dt><dd>₹100 a month. Single: nil</dd>
+            <dt>Fund management</dt><dd>1.35% equity-type funds · 1.25% Balanced · 1.15% Bond Optimiser, Corporate Bond · 1.00% Bond · 0.25% Money Market</dd>
+            <dt>Mortality</dt><dd>Monthly, on sum at risk at attained age. Guaranteed for the term</dd>
+            <dt>Switching, redirection</dt><dd>Nil</dd>
+            <dt>Partial withdrawal</dt><dd>2 free a year, then ₹100 each</dd>
+          </dl>
+        </section>
+        <section>
+          <h3>Loyalty additions</h3>
+          <div class="scroll"><table>
+            <thead><tr><th>End of policy year</th><th>% of average fund value</th></tr></thead>
+            <tbody>
+              <tr><td>6</td><td>1.0%</td></tr><tr><td>10</td><td>2.5%</td></tr><tr><td>15</td><td>3.5%</td></tr>
+              <tr><td>20</td><td>5.0%</td></tr><tr><td>25</td><td>6.0%</td></tr><tr><td>30</td><td>7.0%</td></tr>
+            </tbody>
+          </table></div>
+          <p class="small muted">Average of fund value on the 1st day of the last 12 policy months. In-force policies only; not paid on reduced paid-up policies.</p>
+        </section>
+        <section>
+          <h3>Discontinuance charge</h3>
+          <div class="scroll"><table>
+            <thead><tr><th>Year</th><th>Regular / Limited</th><th>Single</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="txt">Lower of 6% of AP or FV, max ₹6,000</td><td class="txt">Lower of 1% of SP or FV, max ₹6,000</td></tr>
+              <tr><td>2</td><td class="txt">4%, max ₹5,000</td><td class="txt">0.70%, max ₹5,000</td></tr>
+              <tr><td>3</td><td class="txt">3%, max ₹4,000</td><td class="txt">0.50%, max ₹4,000</td></tr>
+              <tr><td>4</td><td class="txt">2%, max ₹2,000</td><td class="txt">0.35%, max ₹2,000</td></tr>
+              <tr><td>5 on</td><td class="txt">Nil</td><td class="txt">Nil</td></tr>
+            </tbody>
+          </table></div>
+          <p class="small muted">Five-year lock-in. Proceeds of a policy discontinued earlier sit in the Discontinued Policy Fund (minimum 4% p.a.) until the lock-in ends.</p>
+        </section>
+        <section>
+          <h3>Liquidity</h3>
+          <dl class="kv">
+            <dt>Partial withdrawals</dt><dd>From year 6 and age 18. ₹5,000 minimum, up to 15% of fund value, 4 a year; 10 in the term if it is 10 years or less, otherwise 15</dd>
+            <dt>Floor</dt><dd>Fund value must stay at or above 50% of premiums paid</dd>
+            <dt>Policy loan</dt><dd>Not available</dd>
+            <dt>Riders</dt><dd>Accident Benefit Rider – Linked (ADB, APPD) and Waiver of Premium Rider – Linked. Not modelled here</dd>
+          </dl>
+        </section>
+      </div>
+    </details>
+  </section>
+
+  <section class="panel">
+    <h2>Official documents</h2>
+    <div class="refgrid docs">
+      <section>
+        <h3>The plan</h3>
+        <ul>
+          <li><a href="https://www.sbilife.co.in/documents/d/sbil/sbi_life_-_smart_privilege_plus_brochure_eng" target="_blank" rel="noopener">Sales brochure</a><small>Eligibility, benefits, all charges, loyalty additions. Ref 3N/ver1/06/26/BR/ENG</small></li>
+          <li><a href="https://www.sbilife.co.in/documents/d/sbil/sbi-life-smart-privilege-plus_v01_pol-doc_wop-rider_sample_-website-10-09-2026" target="_blank" rel="noopener">Sample policy document</a><small>The binding terms and conditions</small></li>
+          <li><a href="https://www.sbilife.co.in/documents/d/sbil/sbi-life-smart-privilege-plus_v01_cis-with-wop-rider_sample_-website-10-09-2026" target="_blank" rel="noopener">Customer information sheet</a><small>The short summary given with the policy</small></li>
+          <li><a href="https://www.sbilife.co.in/documents/d/sbil/sbi_life_-_smart_privilege_plus_leaflet_eng" target="_blank" rel="noopener">Leaflet</a><small>Two-page summary. Ref 3N/ver1/07/26/L/ENG</small></li>
+          <li><a href="https://www.sbilife.co.in/en/individual-life-insurance/ulip/smart-privilege-plus" target="_blank" rel="noopener">Product page</a><small>SBI Life's own premium calculator and FAQs</small></li>
+          <li><a href="https://www.sbilife.co.in/documents/d/sbil/sbi-life-accident-benefit-rider-linked-brochure-prospectus" target="_blank" rel="noopener">Accident Benefit Rider – Linked brochure</a><small>UIN 111A042V01. Ref ABR/ver1/09/25/BR/ENG</small></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Fund performance, all funds</h3>
+        <ul>
+          <li><a href="https://www.sbilife.co.in/customer-services/download-centre/ulip-newsletters?category=1067933" target="_blank" rel="noopener">ULIP newsletters, every month</a><small>SBI Life download centre. Each issue has the performance snapshot and a factsheet per fund</small></li>
+          <li><a href="https://www.sbilife.co.in/documents/20118/22324345/SBI+LIFE+ULIP+NEWS+LETTER+JUN+2026.pdf/4196d4d5-5524-25d0-4a18-0e25621b3702?version=1.0&amp;t=1783237417183&amp;download=true" target="_blank" rel="noopener">ULIP newsletter, June 2026</a><small>Direct PDF. Look in the download centre for later months</small></li>
+          <li><a href="https://www.sbilife.co.in/services-check-nav" target="_blank" rel="noopener">Check NAV</a><small>Daily NAVs and SBI Life's NAV returns calculator</small></li>
+        </ul>
+      </section>
+      <section>
+        <h3>Fund factsheets, one per fund</h3>
+        <ul class="cols"><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Bluechip_Fund.pdf" target="_blank" rel="noopener">Bluechip Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Equity_Fund.pdf" target="_blank" rel="noopener">Equity Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Top_300_Fund.pdf" target="_blank" rel="noopener">Top 300 Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Equity_Optimiser_Fund.pdf" target="_blank" rel="noopener">Equity Optimiser Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Midcap_Fund.pdf" target="_blank" rel="noopener">Midcap Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Pure_Fund.pdf" target="_blank" rel="noopener">Pure Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Growth_Fund.pdf" target="_blank" rel="noopener">Growth Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Balanced_Fund.pdf" target="_blank" rel="noopener">Balanced Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Bond_Optimiser_Fund.pdf" target="_blank" rel="noopener">Bond Optimiser Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_CorporateBond_Fund.pdf" target="_blank" rel="noopener">Corporate Bond Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Bond_Fund.pdf" target="_blank" rel="noopener">Bond Fund</a></li><li><a href="https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/SBI_Money_Market_Fund.pdf" target="_blank" rel="noopener">Money Market Fund</a></li></ul>
+        <p class="small muted">SBI Life's monthly factsheets as hosted by Policybazaar. These are the copies the performance table was read from; some lag the latest month.</p>
+      </section>
+    </div>
+  </section>
+
+  </div>
+
+  <section class="notes">
+    <h2>How to read these numbers</h2>
+    <ul id="notes-list"></ul>
+    <p class="small">Sources: this plan's sales brochure, linked under "Plan at a glance"; fund returns from SBI Life fund factsheets and Value Research data, both as carried on <a href="https://www.policybazaar.com/life-insurance/ulip-plans/sbi-life-insurance/" target="_blank" rel="noopener">Policybazaar's SBI Life fund pages</a>. For a customer, use the policy-specific benefit illustration generated by SBI Life.</p>
+    <p class="risk">In unit-linked policies the investment risk in the investment portfolio is borne by the policyholder. Unit-linked products do not offer any liquidity during the first five years of the contract.</p>
+  </section>
+  </div>
+
+  <section class="notes">
+    <p class="small">Plan details were read from SBI Life's sales brochures and product pages on 8 and 9 October 2026. Each plan's "at a glance" names its source. Products, rates and terms change, so check the current brochure before quoting, and give the customer SBI Life's policy-specific benefit illustration before the sale.</p>
+    <p class="risk">This page is an independent working aid. It is not issued or endorsed by SBI Life Insurance Company Limited. Insurance is the subject matter of solicitation.</p>
+  </section>
+</div>
+
+<script id="engine">
+/* Pure projection engine for SBI Life unit-linked plans. No DOM access. */
+var ENG = (function () {
+  // IALM (2012-14) Ult., rate per 1000, ages 8-70. A proxy: SBI Life's own mortality charge tables are not in the brochures.
+  var Q = {8:.590,9:.492,10:.440,11:.430,12:.455,13:.508,14:.580,15:.661,16:.741,17:.813,18:.874,19:.902,20:.924,
+    21:.937,22:.941,23:.936,24:.933,25:.931,26:.931,27:.934,28:.942,29:.956,30:.977,31:1.005,32:1.042,33:1.086,
+    34:1.140,35:1.202,36:1.275,37:1.358,38:1.453,39:1.560,40:1.680,41:1.815,42:1.969,43:2.144,44:2.345,45:2.579,
+    46:2.851,47:3.168,48:3.536,49:3.958,50:4.436,51:4.969,52:5.550,53:6.174,54:6.831,55:7.513,56:8.212,57:8.925,
+    58:9.651,59:10.393,60:11.162,61:11.969,62:12.831,63:13.767,64:14.794,65:15.932,66:17.207,67:18.639,68:20.243,
+    69:22.041,70:24.058};
+  function q(age){ return Q[Math.min(Math.max(age, 8), 70)]/1000; }
+  var MODES = {yearly:1, half:2, quarterly:4, monthly:12};
+  var MODE_NAME = {yearly:'Yearly', half:'Half-yearly', quarterly:'Quarterly', monthly:'Monthly'};
+
+  var FUND = {
+    bluechip:{name:'Bluechip Fund', fmc:1.35}, equity:{name:'Equity Fund', fmc:1.35}, top300:{name:'Top 300 Fund', fmc:1.35},
+    eqopt:{name:'Equity Optimiser Fund', fmc:1.35}, midcap:{name:'Midcap Fund', fmc:1.35}, pure:{name:'Pure Fund', fmc:1.35},
+    growth:{name:'Growth Fund', fmc:1.35}, balanced:{name:'Balanced Fund', fmc:1.25}, bondopt:{name:'Bond Optimiser Fund', fmc:1.15},
+    corpbond:{name:'Corporate Bond Fund', fmc:1.15}, bond:{name:'Bond Fund', fmc:1.00}, mm:{name:'Money Market Fund', fmc:0.25},
+    elite2:{name:'Equity Elite Fund II', fmc:1.25},
+    eqpen:{name:'Equity Pension Fund', fmc:1.35}, eqoptpen:{name:'Equity Optimiser Pension Fund', fmc:1.35},
+    growpen:{name:'Growth Pension Fund', fmc:1.35}, top300pen:{name:'Top 300 Pension Fund', fmc:1.35},
+    balpen:{name:'Balanced Pension Fund', fmc:1.25}, bondpen:{name:'Bond Pension Fund', fmc:1.00}, mmpen:{name:'Money Market Pension Fund', fmc:0.25}
+  };
+  Object.keys(FUND).forEach(function(k){ FUND[k].id = k; });
+  function fund(id){ return FUND[id] || FUND.bluechip; }
+  var STD12 = ['bluechip','equity','top300','eqopt','midcap','pure','growth','balanced','bondopt','corpbond','bond','mm'];
+  function without(list, drop){ return list.filter(function(id){ return drop.indexOf(id)<0; }); }
+
+  // eWealth Plus Growth strategy: equity share by years left to maturity (upper end of the brochure band), rest in Bond Fund.
+  var GROWTH_EQ = {1:15,2:20,3:25,4:30,5:35,6:40,7:45,8:50,9:55,10:60,11:65,12:70,13:75};
+  function growthEq(yearsLeft){ return (yearsLeft>=14 ? 80 : GROWTH_EQ[Math.max(yearsLeft, 1)])/100; }
+
+  // Level yearly charge for a premium-waiver benefit: expected value of the premiums waived on death, spread over the paying term.
+  function waiverLevel(age, ppt, ap, mf){
+    var v = 1/1.05, S = 1, pvb = 0, pva = 0;
+    for (var t=1; t<=ppt; t++){
+      var qq = q(age+t-1)*mf, rem = 0;
+      for (var j=0; j<ppt-t; j++) rem += Math.pow(v, j);
+      pva += Math.pow(v, t-1)*S;
+      pvb += Math.pow(v, t)*S*qq*ap*rem;
+      S *= (1-qq);
+    }
+    return pva>0 ? pvb/pva : 0;
+  }
+
+  var FB_ALLOC = [9, 6.5, 6.5, 6, 6, 3.5, 3.5, 3, 3, 3];
+  var FB_GA = {regular:[15,15,30,40,50], 7:[5,10,15,15,20], 10:[10,15,25,30,35], 12:[10,15,25,35,40], 15:[10,15,30,40,45], single:[5,5,5,7,8]};
+  var SC_ALLOC = [6, 4.5, 4.5, 4, 4, 1, 1, 1, 1, 1];
+
+  var P = {
+    spp: {
+      types:['regular','limited','single'], modes:['yearly','half','quarterly','monthly'],
+      age:{min:8, max:55, minSingle:13}, mat:{min:18, max:70},
+      pt:{regular:[10,30], limited:[15,30], single:[5,30]}, pptMin:5,
+      minInst:{regular:{yearly:600000, half:300000, quarterly:150000, monthly:50000}, single:600000},
+      sa:{rp:7, sp:1.25}, sar:'gold', mort:90,
+      alloc:function(y, type){ return type==='single' ? 0.02 : (y<=5 ? 0.025 : 0); },
+      admin:function(y, type){ return type==='single' ? 0 : 100; },
+      staff:function(y, type){ return type==='single' ? 0.02 : (y<=5 ? 0.025 : 0); },
+      staffText:'Staff case: add the staff additional allocation (2.5% of premium in years 1–5; 2% for Single). Covers employees and families of SBI, SBI-sponsored RRBs and SBI Life.',
+      loyalty:function(pt){ var o = {}, L = {6:1, 10:2.5, 15:3.5, 20:5, 25:6, 30:7}; for (var y in L) if (+y<=pt) o[y] = L[y]; return o; },
+      loyWin:12, addLabel:'Loyalty additions', addTag:'LA',
+      funds:STD12, def:[{id:'bluechip', pct:100}], lead:'ulip',
+      presets:[
+        {label:'Illustration I', plan:'regular', age:30, pt:20, ppt:20, mode:'yearly', premium:1500000, funds:[{id:'bluechip', pct:100}], target:{0.04:43174009, 0.08:67863212}},
+        {label:'Illustration II', plan:'limited', age:45, pt:20, ppt:15, mode:'yearly', premium:600000, funds:[{id:'balanced', pct:100}], target:{0.04:13995240, 0.08:23557602}}],
+      notes:['It reproduces all ten maturity and death-benefit figures printed in the brochure and one-pager to within 0.02%. Mortality rates are the one input the brochure does not publish, so they are an estimate.',
+             'Not modelled: partial withdrawals, fund switches, rider premiums, underwriting loadings, gender-specific mortality.']
+    },
+    elite: {
+      types:['limited','single'], modes:['yearly','half','quarterly','monthly'],
+      age:{min:18, max:55, maxSingle:60}, mat:{max:70},
+      pt:{limited:[15,30], single:[5,30]}, pptList:[7,10,12],
+      minInst:{limited:{yearly:250000, half:125000, quarterly:62500, monthly:21000}, single:250000},
+      sa:{rp:7, sp:1.25}, mort:100,
+      option:{label:'Cover option', choices:[['gold','Gold'],['plat','Platinum']], hint:'Gold pays the higher of fund value or sum assured. Platinum pays fund value plus sum assured.'},
+      sarOf:function(opt){ return opt==='plat' ? 'plat' : 'gold'; },
+      alloc:function(y, type){ return type==='single' ? 0.02 : (y<=5 ? 0.03 : 0); },
+      admin:function(y, type){ return type==='single' ? 50 : 100; },
+      staff:function(y, type){ return type==='single' ? 0.02 : (y<=5 ? 0.025 : 0); },
+      staffText:'Staff case: add the staff additional allocation (2.5% of premium in years 1–5; 2% for Single).',
+      acc:function(sa){ return 0.60*Math.min(sa, 5000000)/1000; }, otherLabel:'Accident benefit charge',
+      addLabel:'', funds:['elite2'].concat(STD12), def:[{id:'elite2', pct:100}], lead:'ulip',
+      presets:[
+        {label:'Illustration 1 (Gold)', plan:'limited', age:30, pt:20, ppt:10, mode:'yearly', premium:500000, opt:'gold', funds:[{id:'elite2', pct:100}], target:{0.04:7361143, 0.08:13405910}},
+        {label:'Illustration 2 (Platinum)', plan:'limited', age:30, pt:15, ppt:10, mode:'yearly', premium:300000, opt:'plat', funds:[{id:'equity', pct:100}], target:{0.04:3777698, 0.08:5701407}}],
+      notes:['It reproduces the six maturity and death-benefit figures in the June 2026 brochure to within 0.02%. Mortality rates are not published, so they are an estimate set to match those figures.',
+             'The built-in accident benefit charge (₹0.60 a year per ₹1,000 of cover, up to ₹50 lakh) is included. The brochure does not say whether it applies to single pay; this tool applies it.',
+             'Not modelled: partial withdrawals, fund switches, the waiver of premium rider, underwriting loadings, gender-specific mortality.']
+    },
+    fortune: {
+      types:['regular','limited','single'], modes:['yearly'],
+      age:{min:2, max:55}, mat:{min:18, max:70},
+      pt:{regular:[15,30], limited:[15,30], single:[5,30]}, pptList:[7,10,12,15], pptMinPt:{15:20},
+      minInst:{regular:{yearly:40000}, limited:{yearly:50000}, single:65000}, maxPrem:250000,
+      sa:{rp:10, sp:1.25}, sar:'gold', mort:110,
+      alloc:function(y, type){ return type==='single' ? 0.03 : (y<=10 ? FB_ALLOC[y-1]/100 : 0); },
+      admin:function(y, type, prem){ return type==='single' ? Math.min(0.001*prem, 500) : (y<=5 ? 0 : Math.min(0.002*prem, 500)); },
+      adds:function(type, ppt, pt){ var a = FB_GA[type==='limited' ? ppt : type] || [], o = {}; [10,15,20,25,30].forEach(function(y, i){ if (y<=pt && a[i]) o[y] = a[i]; }); return o; },
+      matAdd:function(prem){ return prem>=200000 ? 10 : prem>=100000 ? 5 : 0; },
+      addLabel:'Guaranteed additions', addTag:'GA',
+      funds:without(STD12, ['midcap']), def:[{id:'bluechip', pct:100}], lead:'ulip',
+      presets:[
+        {label:'Illustration I', plan:'regular', age:35, pt:30, ppt:30, mode:'yearly', premium:50000, funds:[{id:'bluechip', pct:100}], target:{0.04:2282166, 0.08:4542661}},
+        {label:'Illustration II', plan:'limited', age:45, pt:20, ppt:15, mode:'yearly', premium:250000, funds:[{id:'balanced', pct:100}], target:{0.04:5144294, 0.08:8575289}}],
+      notes:['It reproduces the eight maturity and death-benefit figures of brochure Illustrations I and II to within 0.02%. Mortality rates are not published, so they are an estimate set to match those figures.',
+             'Guaranteed additions and the addition at maturity are credited as percentages of one year\'s (or the single) premium, as tabulated in the brochure and policy document.',
+             'Not modelled: partial withdrawals, fund switches, rider premiums, underwriting loadings, gender-specific mortality.']
+    },
+    ewealth: {
+      types:['regular','limited'], modes:['yearly','monthly'],
+      age:{min:5, max:50}, mat:{min:18, max:65},
+      pt:{regular:[10,30], limited:[15,30]}, pptList:[7,10],
+      minInst:{regular:{yearly:36000, monthly:3000}, limited:{yearly:36000, monthly:3000}},
+      sa:{rp:10, sp:1.25}, sar:'gold', mort:110,
+      option:{label:'Investment strategy', choices:[['active','Active'],['growth','Growth']], hint:'Growth moves your money from the Equity Fund to the Bond Fund automatically as maturity nears. It is fixed at the start.'},
+      growthOpt:'growth',
+      alloc:function(){ return 0; },
+      admin:function(){ return 100; },
+      addLabel:'', funds:STD12, def:[{id:'bluechip', pct:100}], lead:'ulip',
+      presets:[
+        {label:'Illustration 1 (Growth)', plan:'regular', age:30, pt:20, ppt:20, mode:'yearly', premium:100000, opt:'growth', funds:[{id:'bluechip', pct:100}], target:{0.04:2665768, 0.08:4192530}},
+        {label:'Illustration 2 (Active)', plan:'limited', age:5, pt:25, ppt:10, mode:'yearly', premium:200000, opt:'active', funds:[{id:'bluechip', pct:50},{id:'corpbond', pct:30},{id:'pure', pct:10},{id:'top300', pct:10}], target:{0.04:3394243, 0.08:7481301}}],
+      notes:['It reproduces brochure Illustration 1 to within 0.01% and Illustration 2, a 5-year-old child, to within 0.2%; for young children it slightly overstates the mortality charge. Mortality rates are not published, so they are an estimate.',
+             'Under the Growth strategy the brochure gives a band for each fund. This tool holds the Equity Fund at the top of its band and the rest in the Bond Fund, rebalanced every policy anniversary, which is what reproduces the brochure figures.',
+             'Not modelled: partial withdrawals, fund switches, rider premiums, underwriting loadings, gender-specific mortality.']
+    },
+    scholar: {
+      types:['regular','limited','single'], modes:['yearly','half','quarterly','monthly'],
+      age:{min:18, max:50}, mat:{max:65}, child:{min:0, max:17, matMin:18, matMax:25},
+      pt:{regular:[8,25], limited:[8,25], single:[8,25]}, pptMin:5,
+      minInst:{regular:{yearly:50000, half:25000, quarterly:15000, monthly:5500}, single:75000},
+      sa:{rp:10, sp:1.25}, sar:'full', mort:110,
+      alloc:function(y, type){ return type==='single' ? 0.03 : (y<=10 ? SC_ALLOC[y-1]/100 : 0); },
+      admin:function(y, type){ return type==='single' ? 50 : 75; },
+      acc:function(sa, type){ return type==='single' ? 0 : 0.60*Math.min(sa, 5000000)/1000; },
+      waiver:1.11, otherLabel:'Premium waiver and accident charges',
+      loyalty:function(pt){ var o = {}; for (var y=8; y<=pt; y++) if ((pt-y)%3===0) o[y] = 1; return o; },
+      loyWin:24, addLabel:'Loyalty additions', addTag:'LA',
+      deathLabel:'Paid on parent\'s death',
+      funds:without(STD12, ['midcap','corpbond']), def:[{id:'equity', pct:100}], lead:'child',
+      presets:[
+        {label:'Brochure illustration', plan:'regular', age:35, child:5, pt:20, ppt:20, mode:'yearly', premium:100000, funds:[{id:'equity', pct:100}], target:{0.04:2484011, 0.08:3925820}}],
+      notes:['Two of this plan\'s charges are not published: the premium payor waiver charge and the accident benefit charge. This tool estimates the first from standard mortality and takes the second at ₹0.60 a year per ₹1,000 of cover, then scales them so the one brochure illustration (parent 35, 20 years, ₹1 lakh a year) is reproduced within 0.05%. Results for other ages and terms are therefore approximate.',
+             'On the parent\'s death the sum assured is paid at once, future premiums are paid by SBI Life and the fund is still paid at maturity. The table shows the lump sum paid on death; the fund value column assumes the parent survives.',
+             'Not modelled: partial withdrawals, fund switches, underwriting loadings, gender-specific mortality.']
+    },
+    retire: {
+      types:['regular','limited','single'], modes:['yearly','half','monthly'],
+      age:{min:20, max:60}, mat:{min:30, max:70},
+      pt:{regular:[10,35], limited:[10,35], single:[10,35]}, pptList:[5,6,7,8,10,15], pptMinPt:{10:15, 15:20},
+      minInst:{regular:{yearly:30000, half:15000, monthly:3000}, limited:{yearly:40000, half:20000, monthly:5000}, single:100000},
+      sa:{rp:0, sp:0}, sar:'pension', mort:110, terminal:0.015,
+      alloc:function(y, type){ return type==='single' ? 0.03 : (y===1 ? 0.06 : y===2 ? 0.0475 : y<=10 ? 0.04 : 0.025); },
+      admin:function(y){ return y<=5 ? 45 : 70; },
+      loyalty:function(pt){ var o = {}; if (pt>=15) for (var y=15; y<=pt; y++) o[y] = 0.3; return o; },
+      loyWin:12, addLabel:'Loyalty and terminal additions', addTag:'LA',
+      funds:['eqpen','eqoptpen','growpen','top300pen','balpen','bondpen','mmpen'], def:[{id:'eqpen', pct:100}], lead:'pension',
+      presets:[
+        {label:'Brochure illustration', plan:'regular', age:30, pt:25, ppt:25, mode:'yearly', premium:100000, funds:[{id:'eqpen', pct:100}], target:{0.04:3550809, 0.08:6311183}}],
+      notes:['It reproduces the brochure\'s four vesting and death-benefit figures to within 0.1%.',
+             'The fund at vesting includes the 1.5% terminal addition. At vesting up to 60% can be taken as a lump sum; the rest must buy an annuity, which this tool does not price.',
+             'Not modelled: partial withdrawals, fund switches, extension of the vesting date.']
+    }
+  };
+
+  function typePt(cfg, type){ return cfg.pt[type]; }
+  function minAnnual(cfg, p){
+    if (p.plan==='single') return cfg.minInst.single;
+    var m = cfg.minInst[p.plan] || cfg.minInst.regular;
+    return (m[p.mode] || m.yearly) * MODES[p.mode];
+  }
+
+  function validate(cfg, p){
+    var e = [], single = p.plan==='single';
+    if (cfg.types.indexOf(p.plan)<0){ e.push('Choose a plan type.'); return e; }
+    var aMin = single && cfg.age.minSingle!=null ? cfg.age.minSingle : cfg.age.min;
+    var aMax = single && cfg.age.maxSingle!=null ? cfg.age.maxSingle : cfg.age.max;
+    if (!(p.age>=aMin && p.age<=aMax)) e.push((cfg.child ? 'Parent\'s entry age' : 'Entry age') + ' must be ' + aMin + ' to ' + aMax + ' for this plan type.');
+    var r = typePt(cfg, p.plan);
+    if (!(p.pt>=r[0] && p.pt<=r[1])) e.push('Policy term must be ' + r[0] + ' to ' + r[1] + ' years for this plan type.');
+    var mat = p.age + p.pt, what = cfg.lead==='pension' ? 'Vesting age' : (cfg.child ? 'Parent\'s age at maturity' : 'Maturity age');
+    if (cfg.mat.min!=null && mat<cfg.mat.min) e.push(what + ' is ' + mat + '. The minimum is ' + cfg.mat.min + '.');
+    if (cfg.mat.max!=null && mat>cfg.mat.max) e.push(what + ' is ' + mat + '. The maximum is ' + cfg.mat.max + '.');
+    if (cfg.child){
+      if (!(p.child>=cfg.child.min && p.child<=cfg.child.max)) e.push('Child\'s entry age must be ' + cfg.child.min + ' to ' + cfg.child.max + '.');
+      else { var cm = p.child + p.pt; if (cm<cfg.child.matMin || cm>cfg.child.matMax) e.push('The child would be ' + cm + ' at maturity. Choose a term that makes the child ' + cfg.child.matMin + ' to ' + cfg.child.matMax + '.'); }
+    }
+    if (p.plan==='limited'){
+      if (cfg.pptList){
+        if (cfg.pptList.indexOf(p.ppt)<0) e.push('Premium paying term must be ' + cfg.pptList.join(', ').replace(/, ([^,]*)$/, ' or $1') + ' years.');
+        else if (p.ppt>=p.pt) e.push('Premium paying term must be shorter than the policy term.');
+        else if (cfg.pptMinPt && cfg.pptMinPt[p.ppt] && p.pt<cfg.pptMinPt[p.ppt]) e.push('A ' + p.ppt + '-year paying term needs a policy term of at least ' + cfg.pptMinPt[p.ppt] + ' years.');
+      } else if (!(p.ppt>=cfg.pptMin && p.ppt<=p.pt-1)) e.push('Limited pay needs a premium paying term from ' + cfg.pptMin + ' to ' + (p.pt-1) + ' years.');
+    }
+    if (!single && cfg.modes.indexOf(p.mode)<0) e.push('This plan does not offer that premium frequency.');
+    var mn = minAnnual(cfg, p);
+    if (!(p.premium>=mn)) e.push((single ? 'Single' : 'Annualized') + ' premium must be at least ₹' + mn.toLocaleString('en-IN') + (single || p.mode==='yearly' ? '' : ' for ' + MODE_NAME[p.mode].toLowerCase() + ' payment') + '.');
+    if (cfg.maxPrem && p.premium>cfg.maxPrem) e.push('Premium cannot be more than ₹' + cfg.maxPrem.toLocaleString('en-IN') + '.');
+    if (!(cfg.growthOpt && p.opt===cfg.growthOpt)){
+      var tot = 0, bad = false; p.funds.forEach(function(f){ tot += f.pct; if (f.pct<0 || f.pct%1!==0) bad = true; });
+      if (bad) e.push('Fund percentages must be whole numbers from 0 to 100.');
+      if (Math.abs(tot-100)>1e-9) e.push('Fund split adds up to ' + tot + '%. It must total 100%.');
+    }
+    return e;
+  }
+
+  function project(cfg, p, rate){
+    var type = p.plan, single = type==='single';
+    var ppt = single ? 1 : (type==='regular' ? p.pt : p.ppt);
+    var n = single ? 1 : MODES[p.mode], step = 12/n, inst = p.premium/n;
+    var sa = p.premium * (single ? cfg.sa.sp : cfg.sa.rp);
+    var gst = (p.gst||0)/100, mf = (p.mort==null ? cfg.mort : p.mort)/100;
+    var g = Math.pow(1+rate, 1/12), term = cfg.terminal || 0;
+    var sarRule = cfg.sarOf ? cfg.sarOf(p.opt) : cfg.sar;
+    var auto = !!(cfg.growthOpt && p.opt===cfg.growthOpt);
+    var src = auto ? [{id:'equity', pct:80}, {id:'bond', pct:20}] : p.funds.filter(function(f){ return f.pct>0; });
+    var funds = src.map(function(f){ return {w:f.pct/100, keep:Math.exp(-(fund(f.id).fmc/100)*(1+gst)/12), v:0}; });
+    var accYr = cfg.acc ? cfg.acc(sa, type) : 0;
+    var wvYr = cfg.waiver && !single ? cfg.waiver*waiverLevel(p.age, ppt, p.premium, mf) : 0;
+    var adds = cfg.adds ? cfg.adds(type, ppt, p.pt) : {};
+    var loy = cfg.loyalty ? cfg.loyalty(p.pt) : {};
+    var win = cfg.loyWin || 12, starts = [];
+    var paid = 0, rows = [], flows = [], tot = {premium:0, alloc:0, extra:0, admin:0, mort:0, other:0, fmc:0, loyalty:0};
+    function fv(){ var s = 0; for (var i=0;i<funds.length;i++) s += funds[i].v; return s; }
+    function credit(amt){ var c = fv(); for (var i=0;i<funds.length;i++) funds[i].v += amt*(c>0 ? funds[i].v/c : funds[i].w); }
+    for (var y=1; y<=p.pt; y++){
+      var r = {year:y, age:p.age+y-1, premium:0, alloc:0, extra:0, admin:0, mort:0, other:0, fmc:0, loyalty:0, tag:''};
+      if (auto){ var eq = growthEq(p.pt-y+1); funds[0].w = eq; funds[1].w = 1-eq; }
+      for (var m=0; m<12; m++){
+        var flow = 0, i;
+        if ((single && y===1 && m===0) || (!single && y<=ppt && m%step===0)){
+          var ac = inst*cfg.alloc(y, type)*(1+gst);
+          var extra = p.staff && cfg.staff ? inst*cfg.staff(y, type) : 0;
+          for (i=0;i<funds.length;i++) funds[i].v += (inst-ac+extra)*funds[i].w;
+          paid += inst; r.premium += inst; r.alloc += ac; r.extra += extra; flow = inst;
+        }
+        flows.push(flow);
+        var cur = fv();
+        if (auto && m===0){ funds[0].v = cur*funds[0].w; funds[1].v = cur*funds[1].w; }
+        var floor = Math.max(sa, 1.05*paid), sar;
+        if (sarRule==='plat') sar = Math.max(sa, 1.05*paid - cur);
+        else if (sarRule==='pension') sar = Math.max(1.05*paid - cur*(1+term), 0);
+        else if (sarRule==='full') sar = floor;
+        else sar = Math.max(floor - cur, 0);
+        var mc = sar*q(r.age)*mf/12*(1+gst), adm = cfg.admin(y, type, p.premium)*(1+gst);
+        var oth = (accYr + (y<=ppt ? wvYr : 0))/12*(1+gst);
+        var ded = Math.min(mc+adm+oth, cur), k = cur>0 ? (cur-ded)/cur : 0;
+        for (i=0;i<funds.length;i++) funds[i].v *= k;
+        r.mort += mc; r.admin += adm; r.other += oth; starts.push(cur-ded);
+        for (i=0;i<funds.length;i++){ var gr = funds[i].v*g; r.fmc += gr*(1-funds[i].keep); funds[i].v = gr*funds[i].keep; }
+      }
+      var tags = [];
+      if (adds[y]){ var ga = adds[y]/100*p.premium; credit(ga); r.loyalty += ga; tags.push((cfg.addTag||'') + ' ' + adds[y] + '%'); }
+      if (loy[y]){ var s = 0, c0 = Math.max(starts.length-win, 0); for (var t=c0; t<starts.length; t++) s += starts[t];
+        var la = loy[y]/100*s/(starts.length-c0); credit(la); r.loyalty += la; tags.push((cfg.addTag||'') + ' ' + loy[y] + '%'); }
+      if (y===p.pt && cfg.matAdd){ var mp = cfg.matAdd(p.premium); if (mp){ var ma = mp/100*p.premium; credit(ma); r.loyalty += ma; tags.push('maturity ' + mp + '%'); } }
+      r.fv = fv(); r.paid = paid; r.tag = tags.join(' + ');
+      if (y===p.pt && term){ r.terminal = r.fv*term; r.loyalty += r.terminal; r.fv += r.terminal; r.tag = (r.tag ? r.tag + ' + ' : '') + 'terminal 1.5%'; }
+      var base = y===p.pt ? r.fv : r.fv*(1+term);
+      r.death = sarRule==='plat' ? Math.max(r.fv + sa, 1.05*paid)
+        : sarRule==='pension' ? Math.max(base, 1.05*paid)
+        : sarRule==='full' ? Math.max(sa, 1.05*paid)
+        : Math.max(r.fv, sa, 1.05*paid);
+      for (var key in tot) tot[key] += r[key];
+      rows.push(r);
+    }
+    var maturity = rows[rows.length-1].fv;
+    function npv(x){ var s = 0, d = 1; for (var t=0;t<flows.length;t++){ s -= flows[t]/d; d *= (1+x); } return s + maturity/d; }
+    var a = -0.05, b = 0.05;
+    for (var it=0; it<80; it++){ var mid = (a+b)/2; if (npv(mid)>0) a = mid; else b = mid; }
+    var irr = Math.pow(1+(a+b)/2, 12)-1;
+    var be = null; for (var j=0;j<rows.length;j++) if (rows[j].fv>=rows[j].paid){ be = rows[j].year; break; }
+    var wfmc = 0; if (!auto) p.funds.forEach(function(f){ wfmc += f.pct/100*fund(f.id).fmc; });
+    var nAdds = 0; rows.forEach(function(x){ if (x.loyalty>0) nAdds++; });
+    return {rate:rate, rows:rows, tot:tot, maturity:maturity, irr:irr, sa:sa, paid:paid, inst:inst, n:n, ppt:ppt, auto:auto,
+      breakeven:be, wfmc:wfmc, nAdds:nAdds,
+      growth: maturity - paid - tot.extra - tot.loyalty + tot.alloc + tot.admin + tot.mort + tot.other + tot.fmc};
+  }
+  return {project:project, validate:validate, P:P, FUND:FUND, fund:fund, MODES:MODES, MODE_NAME:MODE_NAME, minAnnual:minAnnual};
+})();
+if (typeof module !== 'undefined') module.exports = ENG;
+
+</script>
+
+<script id="plans">
+/* Plan content. Every figure is from the SBI Life brochure or product page named in `ref` / `docs`. */
+var PLAN_CATS = [
+  {id:"ulip", name:"Wealth (unit-linked)"},
+  {id:"savings", name:"Savings"},
+  {id:"moneyback", name:"Money back"},
+  {id:"child", name:"Child"},
+  {id:"protection", name:"Protection"},
+  {id:"retirement", name:"Retirement"}
+];
+var PLANS = (function(){
+  var S = "https://www.sbilife.co.in";
+  var N_ULIP = "this is a market-linked plan, so returns are not guaranteed and the investment risk is yours. 4% and 8% are assumed rates used for illustration, not minimum or maximum returns. You cannot withdraw or surrender for payout during the first 5 years. Ask for your policy-specific benefit illustration before you decide.";
+  var N_GUAR = "the amounts shown are guaranteed only when every premium is paid on time for the full premium paying term; stopping early reduces them. The example is from SBI Life's brochure; your own figures depend on your age, premium and term. Ask for your policy-specific benefit illustration before you decide.";
+  var N_PAR = "bonuses are not guaranteed and depend on SBI Life's future performance. The 4% and 8% figures are illustrations only, not minimum or maximum returns. Ask for your policy-specific benefit illustration before you decide.";
+  var N_TERM = "this is protection, not an investment. Your premium depends on your age, health and habits, and the example is from SBI Life's brochure. Give complete and true answers on the proposal form so that your family's claim is never in doubt.";
+  var N_ROP = "you get your premiums back only if the policy is kept in force to the end; taxes and any rider or extra premiums are not returned. Your premium depends on your age and health. Give complete and true answers on the proposal form.";
+  var N_ANN = "the income is fixed when you buy and depends on your age, the option you choose and the rates SBI Life offers on that day. The example is from SBI Life's brochure. Ask for your own annuity quotation before you decide.";
+  var G5 = "Grace 30 days (15 for monthly) · revival within 5 years of the first unpaid premium · free look 30 days";
+  var G3 = "Grace 30 days (15 for monthly) · revival within 3 years of the first unpaid premium · free look 30 days";
+  var WOP = "Accident Benefit Rider · Waiver of Premium Rider";
+  var ABR = "Accident Benefit Rider: accidental death up to 3 × sum assured (max ₹2 crore), partial permanent disability up to the sum assured (max ₹1.5 crore)";
+  function docs(page, bro){ var d = [["Product page and SBI Life's own calculator", S + page]]; if (bro) d.unshift(["Sales brochure", bro.indexOf("http")===0 ? bro : S + bro]); return d; }
+
+  return [
+  /* ---------------- Unit-linked ---------------- */
+  {id:"spp", cat:"ulip", name:"Smart Privilege Plus", uin:"111L143V01", calc:true,
+   tag:"Unit-linked plan for larger investments, from ₹6 lakh a year",
+   ref:"3N/ver1/06/26/BR/ENG",
+   glance:[
+    ["Type","Unit-linked, non-participating life insurance savings plan"],
+    ["Entry age","8 to 55 years; 13 to 55 for single pay. Age last birthday"],
+    ["Maturity age","18 to 70 years"],
+    ["Policy term","Regular pay 10 to 30 years · Limited pay 15 to 30 · Single pay 5 to 30"],
+    ["Premium paying term","Regular: whole term · Limited: 5 years up to term minus 1 · Single: once"],
+    ["Minimum premium","₹6,00,000 a year, or ₹6,00,000 single. Half-yearly ₹3,00,000 · quarterly ₹1,50,000 · monthly ₹50,000"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Sum assured","7 × annual premium; 1.25 × single premium"],
+    ["Death benefit","Highest of fund value, sum assured less partial withdrawals of the last 2 years, or 105% of premiums paid"],
+    ["Maturity benefit","Fund value, paid as a lump sum"],
+    ["Funds","12 funds. Unlimited free switches (minimum ₹5,000) and premium redirection"],
+    ["Loyalty additions","1% at year 6, 2.5% at 10, 3.5% at 15, 5% at 20, 6% at 25, 7% at 30, on average fund value. In-force policies only"],
+    ["Lock-in","5 years. No surrender payout or withdrawal before then"],
+    ["Partial withdrawals","From year 6 and age 18. ₹5,000 minimum, up to 15% of fund value, 2 free and 4 at most a year"],
+    ["Charges","Allocation 2.5% in years 1–5, then nil (single 2%) · administration ₹100 a month (single nil) · fund management 0.25% to 1.35% a year · mortality by age"],
+    ["Riders","Accident Benefit Rider – Linked: accidental death up to 3 × sum assured (max ₹2 crore), partial permanent disability up to the sum assured (max ₹1.5 crore) · Waiver of Premium Rider – Linked"],
+    ["Grace, revival, free look", G3],
+    ["Not available","Policy loan"]],
+   docs:docs("/ulip/smart-privilege-plus", "/documents/d/sbil/sbi_life_-_smart_privilege_plus_brochure_eng")},
+
+  {id:"elite", calc:true, cat:"ulip", name:"Smart Elite Plus", uin:"111L146V01",
+   tag:"Unit-linked plan with built-in accident cover, from ₹2.5 lakh a year",
+   ref:"3S/ver1/06/26/BR/ENG",
+   lead:"For example, at age 30 you pay ₹5,00,000 a year for 10 years and stay invested for 20. At an assumed return of 4% a year your fund could grow to <b>₹73.61 L</b>, and at 8% to <b>₹1.34 Cr</b>, on ₹50.00 L paid in. Your family is covered for <b>₹35.00 L</b> throughout.",
+   tiles:[
+    ["2 options","Choose how your family is protected","With Gold, your family receives the higher of your fund value or the sum assured. With Platinum, they receive your fund value and the sum assured together."],
+    ["Built in","Accident cover comes with the plan","Cover for accidental death and accidental total and permanent disability is part of the plan, equal to your sum assured, up to ₹50 lakh."],
+    ["0%","No allocation charge from year 6","From the sixth year, the whole of every premium is invested."],
+    ["7 yrs","Pay for a short time, grow for long","Pay for 7, 10 or 12 years and stay invested for 15 to 30 years. You can also invest just once."],
+    ["13","Funds to choose from","Equity, midcap, bluechip, balanced, bond and more. Move between them as your goals change; two switches a year are free."],
+    ["Year 6","Your money stays within reach","After the 5-year lock-in you can make partial withdrawals of up to 15% of your fund value each time."]],
+   more:"your nominee can choose to receive the death benefit in instalments over 2 to 5 years.",
+   note:N_ULIP,
+   glance:[
+    ["Type","Unit-linked, non-participating life insurance savings plan"],
+    ["Entry age","18 to 55 years (limited pay); 18 to 60 (single pay)"],
+    ["Maturity age","Up to 70 years"],
+    ["Policy term","Limited pay 15 to 30 years · Single pay 5 to 30"],
+    ["Premium paying term","7, 10 or 12 years, or single"],
+    ["Minimum premium","₹2,50,000 a year, or ₹2,50,000 single. Half-yearly ₹1,25,000 · quarterly ₹62,500 · monthly ₹21,000"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Sum assured","7 × annual premium; 1.25 × single premium"],
+    ["Death benefit","Gold: highest of fund value, sum assured less recent partial withdrawals, or 105% of premiums paid. Platinum: higher of fund value plus sum assured, or 105% of premiums paid"],
+    ["Accident benefit","Built in. Equal to the sum assured, up to ₹50 lakh a life. Charge ₹0.60 a year per ₹1,000 of cover"],
+    ["Maturity benefit","Fund value, paid as a lump sum"],
+    ["Funds","13 in the current brochure (the product page still lists 9). 2 free switches a year"],
+    ["Charges","Allocation 3% in years 1–5, then nil (single 2%) · administration ₹100 a month (single ₹50) · fund management 0.25% to 1.35% a year · mortality by age"],
+    ["Partial withdrawals","From year 6. ₹5,000 minimum, up to 15% of fund value, 1 free a year, at most 2 a year and 10 in the term"],
+    ["Lock-in","5 years"],
+    ["Rider","Waiver of Premium Rider – Linked"],
+    ["Grace, revival, free look", G3]],
+   docs:docs("/ulip/smart-elite-plus", "/documents/d/sbil/sbi_life_-_smart_elite_plus_brochure_eng")},
+
+  {id:"fortune", calc:true, cat:"ulip", name:"Smart Fortune Builder", uin:"111L142V01",
+   tag:"Unit-linked plan with guaranteed additions, ₹40,000 to ₹2.5 lakh a year",
+   ref:"3M/ver1/09/26/BR/ENG",
+   lead:"For example, at age 35 you pay ₹50,000 a year for 30 years. At an assumed return of 4% a year your fund could grow to <b>₹22.82 L</b>, and at 8% to <b>₹45.43 L</b>, on ₹15.00 L paid in. Your family is covered for <b>₹5.00 L</b> throughout.",
+   tiles:[
+    ["10×","Life cover of ten times your premium","Your family is covered for 10 times your annual premium for the whole term, and receives the highest of your fund value, the sum assured or 105% of premiums paid."],
+    ["Guaranteed","Additions that are promised","Guaranteed additions are credited to your fund at the end of years 10, 15, 20, 25 and 30. On a 30-year regular-pay policy they add up to 150% of one year's premium."],
+    ["+10%","An extra addition at maturity","A further guaranteed addition is credited at maturity when your premium is ₹1 lakh or more: 5% of one year's premium, rising to 10% from ₹2 lakh."],
+    ["₹0","No administration charge for 5 years","On regular and limited pay there is no policy administration charge in the first 5 years, and no premium allocation charge from year 11."],
+    ["11","Funds to choose from","From equity and bluechip to bond and money market. Two switches a year are free."],
+    ["₹40,000","A plan you can start small","Begin with ₹40,000 a year. Pay throughout, or for 7, 10, 12 or 15 years, or invest once from ₹65,000."]],
+   more:"you can add accident cover, and make partial withdrawals from year 6.",
+   note:N_ULIP,
+   glance:[
+    ["Type","Unit-linked, non-participating life insurance savings plan"],
+    ["Entry age","2 to 55 years"],
+    ["Maturity age","18 to 70 years"],
+    ["Policy term","Regular pay 15 to 30 years · Limited pay 15 to 30 (20 to 30 with 15-year paying term) · Single pay 5 to 30"],
+    ["Premium paying term","Regular: whole term · Limited: 7, 10, 12 or 15 years · Single: once"],
+    ["Minimum premium","Regular pay ₹40,000 a year · Limited pay ₹50,000 a year · Single pay ₹65,000. Paid yearly or once"],
+    ["Maximum premium","₹2,50,000, subject to underwriting"],
+    ["Sum assured","10 × annual premium; 1.25 × single premium"],
+    ["Death benefit","Highest of fund value, sum assured less recent partial withdrawals, or 105% of premiums paid"],
+    ["Maturity benefit","Fund value, paid as a lump sum"],
+    ["Guaranteed additions","% of one year's (or the single) premium at the end of years 10 / 15 / 20 / 25 / 30. Regular pay: 15, 15, 30, 40, 50. Limited 7-pay: 5, 10, 15, 15, 20. 10-pay: 10, 15, 25, 30, 35. 12-pay: 10, 15, 25, 35, 40. 15-pay: 10, 15, 30, 40, 45. Single: 5, 5, 5, 7, 8"],
+    ["Addition at maturity","5% of one year's (or the single) premium for ₹1 lakh to under ₹2 lakh; 10% from ₹2 lakh; nil below ₹1 lakh"],
+    ["Funds","11 funds in this tool. The brochure and SBI Life's website list 12, the twelfth being Midcap Fund, which is left out here as not offered. 2 free switches a year"],
+    ["Charges","Allocation 9% in year 1, 6.5% in years 2–3, 6% in years 4–5, 3.5% in years 6–7, 3% in years 8–10, nil from year 11 (single 3%) · administration nil in years 1–5 then 0.2% of annual premium (single 0.10% of single premium), capped at ₹500 a month · fund management 0.25% to 1.35% a year · mortality by age"],
+    ["Partial withdrawals","From year 6 and age 18. ₹5,000 minimum, up to 15% of fund value, 1 free a year, at most 2 a year and 10 in the term"],
+    ["Lock-in","5 years"],
+    ["Riders","Accident Benefit Rider – Linked · Waiver of Premium Rider – Linked"],
+    ["Grace, revival, free look","Grace 30 days · revival within 3 years of the first unpaid premium · free look 30 days"]],
+   docs:docs("/ulip/smart-fortune-builder", "/documents/d/sbil/sbi_life_-_smart_fortune_builder_brochure_eng")},
+
+  {id:"ewealth", calc:true, cat:"ulip", name:"eWealth Plus", uin:"111L147V01",
+   tag:"Online unit-linked plan with no allocation charge, from ₹36,000 a year",
+   ref:"3R/ver1/09/26/BR/ENG",
+   lead:"For example, at age 30 you pay ₹1,00,000 a year for 20 years under the Growth strategy. At an assumed return of 4% a year your fund could grow to <b>₹26.66 L</b>, and at 8% to <b>₹41.93 L</b>, on ₹20.00 L paid in. Your family is covered for <b>₹10.00 L</b> throughout.",
+   tiles:[
+    ["0%","All of your premium is invested","There is no premium allocation charge at any time."],
+    ["₹36,000","Start from ₹36,000 a year","A simple way to begin investing with life cover built in."],
+    ["10×","Life cover of ten times your premium","Your family receives the highest of your fund value, the sum assured or 105% of premiums paid."],
+    ["Auto","Let the plan manage the mix for you","Under the Growth strategy your money starts mostly in equity and moves steadily to bonds and money market as maturity comes closer. You do nothing."],
+    ["12","Or choose your own funds","Under the Active strategy you pick from 12 funds and can move between them; two switches a year are free."],
+    ["Year 6","Your money stays within reach","After the 5-year lock-in you can make partial withdrawals of up to 15% of your fund value each time."]],
+   more:"the plan is bought online in three steps.",
+   note:N_ULIP,
+   glance:[
+    ["Type","Unit-linked, non-participating life insurance savings plan. Sold online"],
+    ["Entry age","5 to 50 years"],
+    ["Maturity age","18 to 65 years"],
+    ["Policy term","Regular pay 10 to 30 years · Limited pay 15 to 30"],
+    ["Premium paying term","Regular: whole term · Limited: 7 or 10 years"],
+    ["Minimum premium","₹36,000 a year, or ₹3,000 a month"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Sum assured","10 × annual premium"],
+    ["Death benefit","Highest of fund value, sum assured less partial withdrawals of the last 2 years, or 105% of premiums paid"],
+    ["Maturity benefit","Fund value, paid as a lump sum"],
+    ["Strategies","Growth: automatic allocation that shifts from equity to debt as maturity nears; fixed at the start. Active: your choice among 12 funds"],
+    ["Charges","Allocation nil · administration ₹100 a month · fund management 0.25% to 1.35% a year · mortality by age"],
+    ["Switches","2 free a year, then ₹100 each. Minimum ₹5,000"],
+    ["Partial withdrawals","From year 6 and age 18. ₹5,000 minimum, up to 15% of fund value, 1 free a year, at most 2 a year and 10 in the term"],
+    ["Lock-in","5 years"],
+    ["Riders","Accident Benefit Rider – Linked · Waiver of Premium Rider – Linked"],
+    ["Grace, revival, free look","Grace 30 days (15 for monthly) · revival within 3 years · free look 30 days"]],
+   docs:docs("/ulip/ewealth-plus", "/documents/d/sbil/sbi_life_-_ewealth_plus_brochure_eng")},
+
+  /* ---------------- Savings ---------------- */
+  {id:"platplus", cat:"savings", name:"Smart Platina Plus", uin:"111N133V06",
+   tag:"Guaranteed regular income, then 110% of premiums back",
+   ref:"2X/ver1/06/26/BR/ENG",
+   lead:"For example, at age 35 you pay ₹1,00,000 a year for 10 years. Under the Life Income option you then receive a guaranteed <b>₹93,460</b> every year for 15 years, and <b>₹11,00,000</b> at the end. That is ₹25,01,900 in all on ₹10,00,000 paid, with your family covered for <b>₹11,00,000</b>.",
+   tiles:[
+    ["Guaranteed","Income fixed on the day you buy","Your regular income is set at the start and does not depend on markets or bonuses."],
+    ["110%","Your premiums come back, plus 10%","At the end of the policy term you receive 110% of all the premiums you paid, on top of the income."],
+    ["6 yrs","Pay for a few years only","Pay for 6, 7, 8 or 10 years. Your income then runs for 13 to 30 years, depending on the term you pick."],
+    ["11×","Life cover while you save","Your family is covered for at least 11 times your annual premium during the policy term."],
+    ["2 ways","Income for you, or income that carries on","Life Income pays while you are there. Guaranteed Income keeps paying your family for the rest of the payout period even if you are not."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the policy's surrender value during the term."]],
+   more:"you choose whether the income comes yearly, half-yearly, quarterly or monthly, and you can add accident cover or a waiver of premium rider.",
+   note:N_GUAR,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan"],
+    ["Entry age","30 days to 60 years (45 through POSP and CPSC-SPV channels)"],
+    ["Maturity age","Up to 99 years (65 through POSP and CPSC-SPV)"],
+    ["Premium paying term","6, 7, 8 or 10 years"],
+    ["Payout period","6-pay: 13 years · 7-pay and 8-pay: 15, 20, 25 or 30 years · 10-pay: 15, 20 or 25 years"],
+    ["Policy term","Premium paying term + 1 year + payout period"],
+    ["Minimum premium","₹50,000 a year, in multiples of ₹1,000. Half-yearly 51% and monthly 8.5% of the annual premium"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Income options","Life Income or Guaranteed Income, chosen at the start and not changeable"],
+    ["Guaranteed income","A fixed percentage of annual premium, set by entry age, paying term, payout period and option. Starts after the paying term plus 1 year"],
+    ["Maturity benefit","110% of total premiums paid, at the end of the policy term"],
+    ["Death benefit","Highest of 11 × annual premium, 105% of premiums paid, or a formula value; minimum ₹5,50,000. Under Guaranteed Income, the income also continues during the payout period"],
+    ["Riders", ABR + " · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/smart-platina-plus", "/documents/d/sbil/sbi_life_-_smart_platina_plus_brochure_eng")},
+
+  {id:"platsup", cat:"savings", name:"Smart Platina Supreme", uin:"111N171V04",
+   tag:"Short premium term, long guaranteed income",
+   ref:"3G/ver1/09/26/BR/ENG",
+   lead:"For example, at age 35 you pay ₹2,00,000 a year for 10 years on a 15-year term. You then receive a guaranteed <b>₹2,73,022</b> every year for 25 years, and <b>₹22,00,000</b> at the end. That is ₹90,25,546 in all on ₹20,00,000 paid.",
+   tiles:[
+    ["Guaranteed","Income you can plan your life around","Your income is fixed on the day you buy and is paid for 15, 20, 25 or 30 years, as you choose."],
+    ["110%","Your premiums come back, plus 10%","At the end of the payout period you receive 110% of all the premiums you paid."],
+    ["+5%","Income that can rise every year","Choose Increasing Income and your payout grows by 5% of the first year's amount each year."],
+    ["7 yrs","Pay for a few years only","Pay for 7, 8 or 10 years."],
+    ["More","A bigger premium earns a better rate","Annual premiums of ₹1 lakh and above earn an enhanced guaranteed income."],
+    ["Assured","Paid whether or not you are there","Once the payout period begins, the income and the final lump sum are paid in full, to you or to your family."]],
+   more:"you can borrow up to 50% of the surrender value, and add accident cover or a waiver of premium rider.",
+   note:N_GUAR,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan"],
+    ["Entry age","3 to 60 years (57 through POSP and CPSC-SPV channels)"],
+    ["Maturity age","18 to 75 years (65 through POSP and CPSC-SPV)"],
+    ["Premium paying term and policy term","7-pay: term 8 to 12 years · 8-pay: 9 to 13 · 10-pay: 11 to 15"],
+    ["Payout period","15, 20, 25 or 30 years, starting after the policy term"],
+    ["Minimum premium","₹50,000 a year. Half-yearly 51% and monthly 8.5% of the annual premium"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Income options","Level, or Increasing at 5% simple a year from the second payout year"],
+    ["Enhanced income","Extra income for annual premium of ₹1 lakh and above, in four bands up to ₹10 lakh and above"],
+    ["Maturity benefit","Guaranteed income through the payout period, then 110% of total premiums paid"],
+    ["Death benefit","Highest of 11 × annual premium, 105% of premiums paid, or a formula value; minimum sum assured ₹5,50,000"],
+    ["Riders","Accident Benefit Rider · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/smart-platina-supreme", "/documents/d/sbil/brochure-_smart-platina-supreme")},
+
+  {id:"platadv", cat:"savings", name:"Smart Platina Advantage", uin:"111N175V02",
+   tag:"Guaranteed lump sum with additions every year",
+   ref:"4E/ver1/07/26/BR/ENG",
+   lead:"For example, at age 40 you pay ₹5,00,000 a year for 10 years on a 20-year term. At maturity you receive a guaranteed <b>₹1,28,47,500</b> on ₹50,00,000 paid.",
+   tiles:[
+    ["Guaranteed","Your maturity amount is known on day one","You know exactly what you will receive at maturity on the day you buy."],
+    ["Every year","Guaranteed additions keep building","Guaranteed additions are credited at the end of every policy year, at 6% to 11% of the premiums you have paid so far, depending on your premium and term."],
+    ["7 yrs","Pay for a few years only","Pay for 7 or 10 years and stay covered for 15, 20 or 30 years."],
+    ["More","A bigger premium earns a better rate","Annual premiums of ₹1 lakh, and again of ₹2 lakh, move you to a higher guaranteed addition rate."],
+    ["11×","Life cover throughout","Your family is covered for at least 11 times your annual premium, plus the guaranteed additions earned so far."],
+    ["Your call","Take it at once or as income","At maturity take the full amount as a lump sum, or spread it as instalments over 2 to 7 years."]],
+   more:"you can borrow up to 50% of the surrender value, and add accident cover or a waiver of premium rider.",
+   note:N_GUAR,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan"],
+    ["Entry age","30 days to 60 years"],
+    ["Maturity age","18 to 75 years"],
+    ["Premium paying term and policy term","7-pay: term 15 or 20 years · 10-pay: term 20 or 30 years"],
+    ["Minimum premium","₹50,000 a year · half-yearly ₹25,500 · monthly ₹5,000"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Guaranteed additions","Each year, on total premiums paid so far. Annual premium ₹50,000 to under ₹1 lakh: 6% (15-year term), 8% (20), 10% (30). ₹1 lakh to under ₹2 lakh: 6.5%, 8.5%, 10.5%. ₹2 lakh and above: 7%, 9%, 11%"],
+    ["Maturity benefit","Sum assured on maturity plus guaranteed additions. Lump sum, or instalments over 2 to 7 years"],
+    ["Death benefit","Higher of sum assured on death plus guaranteed additions, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium"],
+    ["Riders","Accident Benefit Rider · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/smart-platina-advantage", "/documents/d/sbil/sbi_life-_-_smart_platina_advantage_brochure_eng")},
+
+  {id:"bachat", cat:"savings", name:"Smart Bachat Plus", uin:"111N170V01",
+   tag:"With-profits savings plan, from ₹12,000 a year",
+   ref:"4A/ver1/04/26/BR/ENG",
+   lead:"For example, at age 30 you pay ₹1,00,000 a year for 30 years for a sum assured of ₹30,57,341. With bonuses, your maturity amount could be <b>₹39,01,167</b> at an assumed return of 4%, or <b>₹82,73,929</b> at 8%.",
+   tiles:[
+    ["2 in 1","Savings and life cover together","One plan builds your savings and protects your family for the whole term."],
+    ["Bonus","A share in SBI Life's profits","Bonuses, when declared, are added to your policy every year, and a terminal bonus may be added at the end."],
+    ["2×","Extra protection against accidents","With the Life Plus option, accidental death pays an additional sum assured. On accidental total permanent disability the sum assured is paid and your future premiums are waived."],
+    ["₹12,000","Start from ₹12,000 a year","An affordable way to begin a long-term saving habit."],
+    ["7 yrs","Pay the way that suits you","Pay throughout the term, or finish in 7, 10 or 15 years."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the policy's surrender value."]],
+   note:N_PAR,
+   glance:[
+    ["Type","Non-linked, participating life insurance savings plan"],
+    ["Options","Life · Life Plus (adds accidental death and accidental total permanent disability benefit)"],
+    ["Entry age","Life: 3 to 50 years · Life Plus: 18 to 50 years"],
+    ["Maturity age","Up to 65 years"],
+    ["Policy term","Regular pay and 7-pay: 15 to 30 years · 10-pay and 15-pay: 20 to 30 years"],
+    ["Premium paying term","Whole term, or 7, 10 or 15 years"],
+    ["Minimum premium","₹12,000 a year (regular pay) · ₹15,000 a year (limited pay). Half-yearly 51% and monthly 8.5% of the annual premium"],
+    ["Sum assured","Minimum ₹2,00,000; no upper limit, subject to underwriting"],
+    ["Maturity benefit","Sum assured plus vested reversionary bonuses and terminal bonus, if declared"],
+    ["Death benefit","Higher of sum assured on death plus bonuses, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/smart-bachat-plus", "/documents/d/sbil/product-brochure-prospectus-6")},
+
+  {id:"lifetime", cat:"savings", name:"Smart Lifetime Saver", uin:"111N136V02",
+   tag:"Whole-life cover to age 100 with yearly income",
+   ref:"2Z/ver1/07/26/BR/ENG",
+   lead:"You pay for 10, 12 or 15 years. From the end of that period you receive a <b>guaranteed income every year</b>, for as long as you live, up to age 100. Cash bonuses, when declared, are paid on top from the end of the 7th year.",
+   tiles:[
+    ["Age 100","Cover for your whole life","Your life cover runs until you turn 100."],
+    ["Guaranteed","An income every year, for life","A guaranteed income is paid every year from the end of your premium paying term. The rate is highest for the first 30 years and lower after that."],
+    ["+ Bonus","Cash bonus from year 7","A cash bonus, when declared, is paid every year from the end of the 7th policy year."],
+    ["10 yrs","Pay for a limited time","Pay for 10, 12 or 15 years only."],
+    ["Save it","Let your income pile up","You can leave your yearly income with SBI Life to accumulate with interest, and withdraw it later."],
+    ["100%","Your premiums come back at the end","At maturity the total of your annual premiums is paid, plus any terminal bonus."]],
+   more:"you can borrow up to 50% of the surrender value, and add accident cover or a waiver of premium rider.",
+   note:N_PAR,
+   glance:[
+    ["Type","Non-linked, participating whole life insurance savings plan"],
+    ["Entry age","30 days to 55 years"],
+    ["Maturity age","100 years"],
+    ["Policy term","100 minus age at entry"],
+    ["Premium paying term","10, 12 or 15 years"],
+    ["Minimum premium","₹30,000 a year. Half-yearly 51% and monthly 8.5% of the annual premium"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Basic sum assured","At least 10 × annual premium"],
+    ["Guaranteed survival income","A percentage of basic sum assured every year from the end of the paying term; the rate depends on premium and paying term, and steps down after 30 years and again after 60 (table in brochure)"],
+    ["Cash bonus","Not guaranteed. If declared, paid every year from the end of year 7"],
+    ["Maturity benefit","Total annual premiums payable, plus terminal bonus if declared, plus any accumulated income"],
+    ["Death benefit","Higher of sum assured on death plus that year's income and bonuses, or 105% of premiums paid"],
+    ["Riders","Accident Benefit Rider · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/smart-lifetime-saver", "/documents/d/sbil/sbi_life_-_smart_lifetime_saver_brochure_eng")},
+
+  {id:"samriddhi", cat:"savings", name:"New Smart Samriddhi", uin:"111N129V05",
+   tag:"Small-ticket guaranteed savings, ₹12,000 to ₹75,000 a year, no medical",
+   ref:"2P/ver1/04/26/BR/ENG",
+   lead:"For example, at age 29 you pay ₹30,000 a year for 7 years. At the end of 15 years you receive a guaranteed <b>₹3,57,000</b> on ₹2,10,000 paid.",
+   tiles:[
+    ["Guaranteed","Your maturity amount is known on day one","What you will receive at maturity is fixed when you buy."],
+    ["6%","Guaranteed additions every year","Each year an addition of 5.5% of the premiums paid so far is credited, or 6% when your annual premium is ₹30,000 or more."],
+    ["No medical","Simple and quick to buy","Available without a medical examination, with simple and swift processing."],
+    ["6 yrs","Pay for a few years only","Pay for 6, 7 or 10 years and stay covered for 12, 15 or 20 years."],
+    ["₹12,000","Start from ₹12,000 a year","A plan that fits a modest budget."],
+    ["Loan","Money when you need it","You can borrow up to 90% of the policy's surrender value."]],
+   note:N_GUAR,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan"],
+    ["Entry age","30 days to 50 years"],
+    ["Maturity age","Up to 65 years; at least 18 at maturity"],
+    ["Policy term and paying term","12-year term, pay 6 · 15-year term, pay 7 · 20-year term, pay 10"],
+    ["Premium","₹12,000 to ₹75,000 a year, in multiples of ₹1,000. Yearly or monthly (8.5% of the annual premium)"],
+    ["Basic sum assured","₹58,000 to ₹9,11,000, set by premium, age and term"],
+    ["Guaranteed additions","5.5% a year of total premiums paid so far when annual premium is under ₹30,000; 6% at ₹30,000 or more. Credited at each policy year end"],
+    ["Maturity benefit","Basic sum assured plus guaranteed additions. Roughly 133% to 214% of premiums paid, depending on age and premium"],
+    ["Death benefit","Sum assured on death (highest of basic sum assured, 10 × annual premium, or 105% of premiums paid) plus guaranteed additions"],
+    ["Medical examination","Not required"],
+    ["Policy loan","Up to 90% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/savings-plan/new-smart-samriddhi", "/documents/d/sbil/product-brochure-prospectus-10")},
+
+  /* ---------------- Money back ---------------- */
+  {id:"mbplus", cat:"moneyback", name:"Smart Money Back Plus", uin:"111N174V02",
+   tag:"Four rising payouts during the term, limited premium paying",
+   ref:"4B/ver1/06/26/BR/ENG",
+   lead:"For example, a 30-year-old parent pays ₹73,004 a year for 7 years for a 1-year-old child, for a sum assured of ₹5,00,000 on a 21-year term. <b>₹4,50,000</b> comes back in four payouts during the term. At maturity ₹2,00,000 is paid plus bonuses: <b>₹2,10,500</b> in all at an assumed return of 4%, or <b>₹5,96,900</b> at 8%.",
+   tiles:[
+    ["130%","130% of your sum assured, plus bonuses","Across the term you receive 130% of the sum assured in payouts and maturity, with bonuses on top when declared."],
+    ["4 payouts","Cash at the points life needs it","15%, 20%, 25% and 30% of your sum assured are paid to you at set intervals during the term."],
+    ["In full","Payouts do not cut your family's cover","Your family's death benefit stays in full even after you have received the payouts."],
+    ["7 yrs","Pay for a limited time","Pay for 7, 10 or 12 years only."],
+    ["Bonus","A share in SBI Life's profits","Bonuses, when declared, are added every year and paid at maturity with the last 40% of your sum assured."],
+    ["Less","A lower rate for higher cover","Premium discounts apply for a higher sum assured."]],
+   more:"you can borrow up to 50% of the surrender value, and add accident cover or a waiver of premium rider.",
+   note:N_PAR,
+   glance:[
+    ["Type","Non-linked, participating life insurance savings plan"],
+    ["Entry age","30 days to 50 years"],
+    ["Maturity age","20 to 70 years"],
+    ["Policy term","20 to 25 years"],
+    ["Premium paying term","7, 10 or 12 years"],
+    ["Minimum premium","₹20,000 a year · half-yearly ₹10,200 · monthly ₹1,700"],
+    ["Sum assured","Minimum ₹2,00,000; no upper limit, subject to underwriting"],
+    ["Survival benefits","15%, 20%, 25% and 30% of sum assured at the end of years 4, 8, 12 and 16 (years 5, 10, 15 and 20 for a 25-year term). 90% in all"],
+    ["Maturity benefit","40% of sum assured plus vested reversionary bonuses and terminal bonus, if declared"],
+    ["Death benefit","Higher of sum assured on death plus bonuses, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium. Survival benefits already paid are not deducted"],
+    ["Riders","Accident Benefit Rider · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/money-back-plans/smart-money-back-plus", "/documents/d/sbil/sbi_life_-_smart_money_back_plus_brochure_eng-1")},
+
+  {id:"mbsaver", cat:"moneyback", name:"Smart Money Back Saver", uin:"111N176V01",
+   tag:"Regular-premium money back, from ₹18,000 a year",
+   ref:"4D/ver1/06/26/BR/ENG",
+   lead:"For example, at age 25 you pay ₹27,353 a year for 25 years for a sum assured of ₹5,00,000. You receive <b>₹4,25,000</b> in four payouts, in years 5, 10, 15 and 20. At maturity you receive ₹2,25,000 plus bonuses: <b>₹3,54,375</b> in all at an assumed return of 4%, or <b>₹7,28,125</b> at 8%.",
+   tiles:[
+    ["130%","130% of your sum assured, plus bonuses","Across the term you receive 130% of the sum assured, with bonuses on top when declared."],
+    ["5 payouts","Money back, again and again","10%, 15%, 25% and 35% of your sum assured come to you during the term, and the last 45% at maturity."],
+    ["₹18,000","Start from ₹18,000 a year","A steady saving habit with a small yearly commitment."],
+    ["Bonus","A share in SBI Life's profits","Bonuses, when declared, are added every year and paid with your final payout."],
+    ["Less","A lower rate for higher cover","Premium discounts apply for a higher sum assured."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the policy's surrender value, and add accident cover or a waiver of premium rider."]],
+   note:N_PAR,
+   glance:[
+    ["Type","Non-linked, participating life insurance savings plan. Regular premium"],
+    ["Entry age","30 days to 45 years"],
+    ["Maturity age","20 to 70 years"],
+    ["Policy term","20 to 25 years"],
+    ["Premium paying term","Same as the policy term"],
+    ["Minimum premium","₹18,000 a year · half-yearly ₹10,000 · monthly ₹2,000"],
+    ["Sum assured","Minimum ₹3,00,000; no upper limit, subject to underwriting"],
+    ["Survival benefits","10%, 15%, 25% and 35% of sum assured in years 4, 8, 12 and 16 (years 5, 10, 15 and 20 for a 25-year term)"],
+    ["Maturity benefit","45% of sum assured plus vested reversionary bonuses and terminal bonus, if declared"],
+    ["Death benefit","Higher of sum assured on death plus bonuses, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium"],
+    ["Riders", WOP],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/money-back-plans/smart-money-back-saver", "/documents/d/sbil/sbi_life_-_smart_money_back_saver_brochure_eng")},
+
+  /* ---------------- Child ---------------- */
+  {id:"scholar", calc:true, cat:"child", name:"Smart Scholar Plus", uin:"111L144V01",
+   tag:"Unit-linked child plan that continues even if the parent is not there",
+   ref:"3Q/ver1/08/26/BR/ENG",
+   lead:"For example, at age 35 you pay ₹1,00,000 a year for 20 years for your 5-year-old. At an assumed return of 4% a year the fund could grow to <b>₹24.84 L</b>, and at 8% to <b>₹39.26 L</b>, on ₹20.00 L paid in. You are covered for <b>₹10.00 L</b> throughout.",
+   tiles:[
+    ["Goes on","Your child's plan continues without you","If you are not there, the sum assured is paid at once, SBI Life pays all the remaining premiums for you, and the full fund is still paid at maturity."],
+    ["10×","Life cover of ten times your premium","You, the parent, are covered for 10 times the annual premium."],
+    ["Built in","Accident cover comes with the plan","Cover for accidental death and accidental total and permanent disability is included, equal to your sum assured, up to ₹50 lakh."],
+    ["1%","Rewarded for staying","A loyalty addition of 1% of the average fund value is credited from year 8, 9 or 10, depending on your term, and then every three years."],
+    ["10","Funds to choose from","From equity to bond and money market. Two switches a year are free."],
+    ["18–25","Timed to your child's milestones","Choose a term of 8 to 25 years so the money arrives when your child is between 18 and 25."]],
+   more:"partial withdrawals are allowed from year 6.",
+   note:N_ULIP,
+   glance:[
+    ["Type","Unit-linked, non-participating child-cum-life insurance savings plan"],
+    ["Entry age","Parent (life assured) 18 to 50 years · Child 0 to 17 years"],
+    ["Maturity age","Child 18 to 25 years · Parent up to 65 years"],
+    ["Policy term","8 to 25 years"],
+    ["Premium paying term","Regular: whole term · Limited: 5 years up to term minus 1 · Single: once"],
+    ["Minimum premium","₹50,000 a year · half-yearly ₹25,000 · quarterly ₹15,000 · monthly ₹5,500 · single ₹75,000"],
+    ["Sum assured","10 × annual premium; 1.25 × single premium"],
+    ["On the parent's death","Higher of sum assured or 105% of premiums paid, paid at once. Future premiums are paid by SBI Life and the policy continues to maturity (not for single pay)"],
+    ["Accident benefit","Built in for regular and limited pay. Equal to the sum assured, up to ₹50 lakh. Total permanent disability is paid in 10 yearly instalments"],
+    ["Maturity benefit","Fund value, paid as a lump sum"],
+    ["Funds","10 funds, as in SBI Life's own calculator. The brochure lists 12, adding Midcap Fund and Corporate Bond Fund, which are left out here as not offered. 2 free switches a year"],
+    ["Loyalty additions","1% of average fund value over the previous 24 months. First at the end of year 8, 9 or 10 depending on the term, then every 3 years to maturity. In-force policies only"],
+    ["Charges","Allocation 6% in year 1, 4.5% in years 2–3, 4% in years 4–5, 1% in years 6–10, nil from year 11 (single 3%) · administration ₹75 a month (single ₹50) · fund management 0.25% to 1.35% a year · mortality, premium payor waiver and accident benefit charges monthly"],
+    ["Partial withdrawals","From year 6. ₹5,000 minimum, up to 15% of fund value, 1 free a year, at most 2 a year; 5 in the term if it is 10 years or less, otherwise 10"],
+    ["Lock-in","5 years"],
+    ["Grace, revival, free look", G3]],
+   docs:docs("/child-insurance-plan/smart-scholar-plus", "/documents/d/sbil/sbi_life_-_smart_scholar_plus_brochure_eng")},
+
+  {id:"futurestar", cat:"child", name:"Smart Future Star", uin:"111N172V01",
+   tag:"With-profits child plan with premium waiver",
+   ref:"3X/ver1/04/26/BR/ENG",
+   lead:"For example, a 35-year-old mother pays ₹50,011 a year for 10 years for her 3-year-old daughter. After 20 years the sum assured of ₹6,32,000 is paid with bonuses: <b>₹7,11,948</b> in all at an assumed return of 4%, or <b>₹13,19,300</b> at 8%.",
+   tiles:[
+    ["Waived","If you are not there, the premiums stop but the plan does not","On the proposer's death or accidental total permanent disability while premiums are being paid, all future premiums are waived and the plan continues in full."],
+    ["Your child","Your child is the one insured","The plan gives your child life cover from the start."],
+    ["Bonus","A share in SBI Life's profits","Bonuses, when declared, are added every year and paid with the sum assured at maturity."],
+    ["7 yrs","Pay for a limited time","Pay for 7, 10 or 12 years and let it grow for 15 to 25 years."],
+    ["Your call","Take the money when it is needed","The maturity amount can be taken at once, deferred by 1 to 7 years, or received in instalments over 2 to 7 years."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the policy's surrender value."]],
+   note:N_PAR,
+   glance:[
+    ["Type","Non-linked, participating life insurance savings plan for children"],
+    ["Entry age","Child (life assured) 30 days to 15 years · Proposer 18 to 65 years"],
+    ["Maturity age","Child 18 to 35 years"],
+    ["Policy term","15 to 25 years"],
+    ["Premium paying term","7, 10 or 12 years"],
+    ["Minimum premium","₹40,000 a year · half-yearly ₹20,400 · monthly ₹3,400"],
+    ["Sum assured","Minimum ₹4,00,000; no upper limit, subject to underwriting"],
+    ["Maturity benefit","Sum assured on maturity plus vested reversionary bonuses and terminal bonus, if declared"],
+    ["Death benefit (child)","Higher of sum assured on death plus bonuses, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium"],
+    ["Premium waiver","On the proposer's death or accidental total permanent disability during the paying term"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/child-insurance-plan/smart-future-star", "/documents/d/sbil/smart-future-star-product-brochure-prospectus")},
+
+  {id:"young", cat:"child", name:"Smart Platina Young Achiever", uin:"111N173V03",
+   tag:"Guaranteed child plan with premium waiver",
+   ref:"3Y/ver1/06/26/BR/ENG",
+   lead:"For example, a 35-year-old parent pays ₹1,00,000 a year for 10 years for a newborn. After 20 years the child receives a guaranteed <b>₹24,21,250</b> on ₹10,00,000 paid.",
+   tiles:[
+    ["Guaranteed","A fixed amount for your child's big day","The maturity amount for education or marriage is fixed on the day you buy."],
+    ["Every year","Guaranteed additions keep building","Guaranteed additions of 5.5% to 6.5% of the total premiums paid so far are credited at the end of every policy year, right up to maturity."],
+    ["Waived","If you are not there, the plan still completes","On the proposer's death or accidental total permanent disability while premiums are being paid, all future premiums are waived and the plan continues."],
+    ["7 yrs","Pay for a few years only","Pay for 7 or 10 years."],
+    ["More","A bigger premium earns a better rate","Annual premiums of ₹1 lakh, and again of ₹2 lakh, move you to a higher guaranteed addition rate."],
+    ["Your call","Take the money when it is needed","The maturity amount can be taken at once, deferred by 1 to 7 years, or received in instalments over 2 to 7 years."]],
+   note:N_GUAR,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan for children"],
+    ["Life assured","A minor child. Proposer: parent, grandparent or legal guardian. The policy vests in the child at 18"],
+    ["Entry age","Child 30 days to 15 years · Proposer 18 to 65 years"],
+    ["Maturity age","Child 18 to 35 years"],
+    ["Policy term","15 to 25 years"],
+    ["Premium paying term","7 or 10 years"],
+    ["Minimum premium","₹50,000 a year; no upper limit"],
+    ["Sum assured","Minimum ₹3,50,000; no upper limit"],
+    ["Guaranteed additions","Each year to the end of the policy term, on total premiums paid so far. Annual premium ₹50,000 to under ₹1 lakh: 5.50% (7-pay), 6.00% (10-pay). ₹1 lakh to under ₹2 lakh: 5.75%, 6.25%. ₹2 lakh and above: 6.00%, 6.50%"],
+    ["Maturity benefit","Sum assured plus accrued guaranteed additions. Lump sum, deferred by 1 to 7 years, or instalments over 2 to 7 years"],
+    ["Death benefit (child)","Higher of sum assured on death plus guaranteed additions, or 105% of premiums paid. Sum assured on death is at least 11 × annual premium"],
+    ["Premium waiver","On the proposer's death or accidental total permanent disability during the paying term"],
+    ["Policy loan","Up to 50% of surrender value"]],
+   docs:docs("/en/individual-life-insurance/child-plans/smart-platina-young-achiever", "/documents/d/sbil/smart-platina-young-achiever-product-brochure-prospectus")},
+
+  /* ---------------- Protection ---------------- */
+  {id:"shieldplus", cat:"protection", name:"Smart Shield Plus", uin:"111N150V01",
+   tag:"Term cover from ₹25 lakh, with options that grow with you",
+   ref:"4C/ver1/04/26/BR/ENG",
+   lead:"For example, a 30-year-old non-smoker gets <b>₹1 crore</b> of level cover on a 45-year term for <b>₹14,088</b> a year.",
+   tiles:[
+    ["₹25 L+","Big cover for a small premium","Cover starts at ₹25 lakh, with no upper limit subject to underwriting."],
+    ["+5%","Cover that grows every year","With Increasing Cover, your sum assured rises by 5% of the original amount each year, up to double, while your premium stays the same."],
+    ["Life stages","Raise your cover when life changes","With Future Proofing, you can add cover on marriage, the birth of a child or buying a home, without fresh medical tests. Your premium rises with the added cover."],
+    ["Spouse","Cover your better half too","The Better Half Benefit covers your spouse as well. If you are not there, no more premiums are due and your spouse stays covered."],
+    ["Age 100","Covered for as long as you choose","Take cover up to age 79, or for your whole life up to age 100."],
+    ["Less","Lower rates for women and for higher cover","Premium rates are lower for women and for a higher sum assured."]],
+   more:"your family can take the claim as a lump sum, as instalments over 5 to 20 years, or as a mix of both. You can add accident cover.",
+   note:N_TERM + " Nothing is payable if you outlive the term.",
+   glance:[
+    ["Type","Non-linked, non-participating pure risk life insurance plan"],
+    ["Options","Level Cover · Increasing Cover (5% simple a year to 200%, until age 71) · Level Cover with Future Proofing"],
+    ["Entry age","18 to 60 years (regular pay), 18 to 65 (single or limited pay); up to 40 for Future Proofing; from 45 for whole life"],
+    ["Cover ceases at","Age 79; age 100 for whole life (limited pay)"],
+    ["Policy term","5 years up to 79 minus entry age; longer minimums for limited pay; 10 years minimum for Increasing Cover"],
+    ["Premium paying","Regular, single, or limited: 10, 15, 20 or 25 years"],
+    ["Minimum premium","₹2,500 a year · half-yearly ₹1,275 · monthly ₹210 · single ₹12,000"],
+    ["Sum assured","Minimum ₹25,00,000, in multiples of ₹1,00,000; no upper limit, subject to underwriting"],
+    ["Death benefit","Highest of 11 × annual premium, the amount assured on death, or 105% of premiums paid. Lump sum, instalments over 5, 10, 15 or 20 years, or part of each"],
+    ["Future Proofing increases","Marriage 50% (max ₹50 lakh) · first and second child 25% each (max ₹25 lakh) · home purchase 50% (max ₹50 lakh or the home loan)"],
+    ["Better Half Benefit","Spouse cover of ₹25 lakh or 50% of sum assured, whichever is lower, until the spouse is 60 or the policy term ends, whichever is earlier. Chosen at the start only; extra premium applies"],
+    ["Maturity benefit","None"],
+    ["Rider", ABR],
+    ["Policy loan","Not available"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/term-insurance/smart-shield-plus", "/documents/d/sbil/product-brochure-prospectus-15")},
+
+  {id:"premier", cat:"protection", name:"Smart Shield Premier", uin:"111N145V01",
+   tag:"High-value term cover from ₹2 crore, up to age 85",
+   ref:"3K/ver1/04/26/BR/ENG",
+   lead:"For example, a 30-year-old gets <b>₹2 crore</b> of level cover up to age 85 for <b>₹24,592</b> a year.",
+   tiles:[
+    ["₹2 Cr+","Cover that matches what you have built","Cover starts at ₹2 crore, sized to protect a larger income and lifestyle."],
+    ["Age 85","Protection deep into retirement","Choose your own term, with cover available up to age 85."],
+    ["+10%","Cover that steps up over time","With Increasing Cover, your sum assured rises by 10% every 5 years, up to double the original amount."],
+    ["5 yrs","Finish paying early","Pay throughout, or complete your premiums in 5, 10, 15, 20 or 25 years."],
+    ["Income","Your family can take it as monthly income","The claim can be paid as a lump sum, as monthly instalments over 5, 10 or 15 years, or half and half."],
+    ["Add on","Extra cover against accidents","You can add the Accident Benefit Rider for accidental death and disability."]],
+   note:N_TERM + " Nothing is payable if you outlive the term.",
+   glance:[
+    ["Type","Non-linked, non-participating pure risk life insurance plan"],
+    ["Options","Level Cover · Increasing Cover (10% of sum assured every 5 years, to 100% extra; no increase after age 71)"],
+    ["Entry age","18 to 60 years"],
+    ["Cover ceases at","Age 85 at the latest"],
+    ["Policy term","10 years up to 85 minus entry age"],
+    ["Premium paying","Regular, or limited: 5, 10, 15, 20 or 25 years"],
+    ["Minimum premium","₹9,500 a year · half-yearly ₹4,500 · monthly ₹800"],
+    ["Sum assured","Minimum ₹2,00,00,000, in multiples of ₹1,00,000"],
+    ["Death benefit","Highest of the amount assured on death, 11 × annual premium, or 105% of premiums paid"],
+    ["Maturity benefit","None"],
+    ["Rider", ABR],
+    ["Policy loan","Not available"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/term-insurance/smart-shield-premier", "/documents/d/sbil/product-brochure-prospectus-14")},
+
+  {id:"saraljb", cat:"protection", name:"Saral Jeevan Bima", uin:"111N128V02",
+   tag:"Standard, simple term plan: ₹5 lakh to ₹25 lakh of cover",
+   ref:"2Q/ver1/05/26/BR/ENG",
+   lead:"For example, a healthy 35-year-old gets <b>₹20,00,000</b> of cover for 30 years for <b>₹11,480</b> a year.",
+   tiles:[
+    ["Simple","A term plan anyone can understand","A standard plan with standard, easy terms and conditions."],
+    ["₹5–25 L","Cover sized for your family","Choose cover from ₹5 lakh to ₹25 lakh."],
+    ["₹1,415","Premiums from ₹1,415 a year","Protection at an affordable cost."],
+    ["4 ways","Pay the way that suits you","Pay throughout the term, for 5 years, for 10 years, or just once."],
+    ["5–40 yrs","Covered for as long as you need","Choose a term from 5 to 40 years."],
+    ["Day one","Accidents are covered from the first day","Death by accident is covered at once. Death from other causes is covered after the first 45 days."]],
+   note:N_TERM + " Nothing is payable if you outlive the term. If death from a cause other than an accident happens in the first 45 days, the premiums paid are returned.",
+   glance:[
+    ["Type","Non-linked, non-participating pure risk premium life insurance plan (standard product)"],
+    ["Entry age","18 to 65 years (60 through POSP and CPSC-SPV channels)"],
+    ["Cover ceases at","Age 70 at the latest (65 through POSP and CPSC-SPV)"],
+    ["Policy term","Regular and single: 5 to 40 years · 5-pay: 10 to 40 · 10-pay: 15 to 40"],
+    ["Premium paying","Regular, limited 5 years, limited 10 years, or single"],
+    ["Premium","Yearly ₹1,415 to ₹1,01,025 · single ₹5,480 to ₹4,15,475"],
+    ["Sum assured","₹5,00,000 to ₹25,00,000, in multiples of ₹50,000"],
+    ["Death benefit","Regular and limited: highest of 10 × annual premium, 105% of premiums paid, or the sum assured. Single: higher of 125% of single premium or the sum assured"],
+    ["Waiting period","45 days from the start of risk. Only accidental death is covered in that period; otherwise premiums paid are returned"],
+    ["Maturity benefit","None"],
+    ["Riders, loan","Not available"],
+    ["Grace, revival, free look","Grace 30 days (15 for monthly) · revival within 5 years · free look 15 days (30 for electronic and distance sales)"]],
+   docs:docs("/term-insurance/saral-jeevan-bima", "/documents/d/sbil/product-brochure-prospectus-13")},
+
+  {id:"eshield", cat:"protection", name:"eShield Insta", uin:"111N141V02",
+   tag:"10-year digital term plan, with or without return of premium",
+   ref:"3C/ver1/04/26/BR/ENG",
+   lead:"You choose cover from <b>₹10 lakh to ₹60 lakh</b> for 10 years. With Plan B, if you outlive the term you get back <b>every premium you paid</b>.",
+   tiles:[
+    ["Instant","Cover issued quickly and digitally","Easy enrolment with swift, digital processing of your policy."],
+    ["2 plans","Pure cover, or cover with your money back","Plan A is pure term insurance. Plan B returns all your premiums if you outlive the term."],
+    ["100%","Get every premium back with Plan B","If nothing happens in the 10 years, all the premiums you paid are returned."],
+    ["10 yrs","A short, clear commitment","The term is 10 years, with premiums paid through the term."],
+    ["₹10–60 L","Cover sized for your needs","Choose cover from ₹10 lakh to ₹60 lakh."],
+    ["₹2,259","Premiums from ₹2,259 a year","For pure term cover under Plan A."]],
+   note:N_TERM + " Under Plan A nothing is payable if you outlive the term.",
+   glance:[
+    ["Type","Non-linked, non-participating pure risk / savings plan with return of premium"],
+    ["Options","Plan A: pure term · Plan B: term with return of premium. Fixed at the start"],
+    ["Entry age","18 to 50 years"],
+    ["Cover ceases at","Age 60 at the latest"],
+    ["Policy term","10 years; premiums paid throughout"],
+    ["Minimum premium","Plan A ₹2,259 a year (₹192 a month) · Plan B ₹10,735 a year (₹912 a month)"],
+    ["Sum assured","₹10,00,000 to ₹60,00,000"],
+    ["Death benefit","Highest of the sum assured, 11 × annual premium, or 105% of premiums paid"],
+    ["Maturity benefit","Plan A: none · Plan B: 100% of total premiums paid"],
+    ["Policy loan","Plan B only, up to 50% of surrender value"],
+    ["Grace, revival, free look","Grace 30 days (15 for monthly) · revival within 5 years · free look 30 days"]],
+   docs:docs("/term-insurance/eshield-insta", "/documents/d/sbil/product-brochure-prospectus-12")},
+
+  {id:"swadhansup", cat:"protection", name:"Smart Swadhan Supreme", uin:"111N140V02",
+   tag:"Term cover from ₹25 lakh that returns your premiums",
+   ref:"3D/ver1/07/26/BR/ENG",
+   lead:"For example, a 30-year-old woman takes <b>₹1 crore</b> of cover for 30 years for ₹22,284 a year. If she outlives the term she gets back <b>₹6,68,520</b>, everything she paid.",
+   tiles:[
+    ["100%","Every premium comes back to you","If nothing happens during the term, all the premiums you paid are returned at maturity."],
+    ["₹25 L+","High cover for your family","Cover starts at ₹25 lakh with no upper limit, subject to underwriting."],
+    ["10–30 yrs","Choose your own term","Take cover for 10 to 30 years."],
+    ["7 yrs","Finish paying early","Pay throughout, or complete your premiums in 7, 10 or 15 years."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the policy's surrender value."],
+    ["Add on","Extra cover against accidents","You can add the Accident Benefit Rider for accidental death and disability, or a waiver of premium rider."]],
+   note:N_ROP,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan with return of premium"],
+    ["Entry age","18 to 60 years"],
+    ["Maturity age","Up to 75 years"],
+    ["Policy term","Regular pay 10 to 30 years · 7-pay and 10-pay 15 to 30 · 15-pay 20 to 30"],
+    ["Premium paying","Regular, or limited: 7, 10 or 15 years"],
+    ["Minimum premium","₹6,000 a year · half-yearly ₹3,060 · monthly ₹510"],
+    ["Sum assured","Minimum ₹25,00,000, in multiples of ₹50,000; no upper limit, subject to underwriting"],
+    ["Death benefit","Highest of the sum assured, 11 × annual premium, or 105% of premiums paid"],
+    ["Maturity benefit","100% of total premiums paid"],
+    ["Riders", ABR + " · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/term-insurance/smart-swadhan-supreme", "/documents/d/sbil/sbi_life-_-_smart_swadhan_supreme_brochure_eng")},
+
+  {id:"neo", cat:"protection", name:"Smart Swadhan Neo", uin:"111N148V01",
+   tag:"Return-of-premium cover of ₹5 lakh to ₹24.9 lakh, from ₹5,000 a year",
+   ref:"3W/ver1/07/26/BR/ENG",
+   lead:"For example, a 40-year-old takes <b>₹24,00,000</b> of cover for 25 years for ₹28,595 a year. If he outlives the term he gets back <b>₹7,14,882</b>, everything he paid.",
+   tiles:[
+    ["100%","Every premium comes back to you","If nothing happens during the term, all the premiums you paid are returned at maturity."],
+    ["₹5,000","Start from ₹5,000 a year","Protection with your money back, within a modest budget."],
+    ["₹5–24.9 L","Cover sized for your family","Choose cover from ₹5 lakh to ₹24.9 lakh."],
+    ["Your way","Pay once, for a few years, or throughout","Pay a single premium, pay for 7, 10 or 15 years, or pay through the term."],
+    ["15–30 yrs","Choose your own term","Take cover for 15 to 30 years."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the surrender value, and add accident cover."]],
+   note:N_ROP,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan with return of premium"],
+    ["Entry age","18 to 60 years (50 through POSP and CPSC-SPV channels)"],
+    ["Maturity age","Up to 75 years (65 through POSP and CPSC-SPV)"],
+    ["Policy term","15 to 30 years (20 to 30 with a 15-year paying term)"],
+    ["Premium paying","Single, regular, or limited: 7, 10 or 15 years"],
+    ["Premium","₹5,000 to ₹1,80,000 a year · half-yearly from ₹2,550 · monthly from ₹425 · single ₹19,000 to ₹7,79,000"],
+    ["Sum assured","₹5,00,000 to ₹24,90,000"],
+    ["Death benefit","Regular and limited: highest of the sum assured, 10 × annual premium, or 105% of premiums paid. Single: higher of the sum assured or 125% of single premium"],
+    ["Maturity benefit","100% of total premiums paid"],
+    ["Riders","Accident Benefit Rider: accidental death up to ₹74,70,000, partial permanent disability up to ₹24,90,000 · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/term-insurance/smart-swadhan-neo", "/documents/d/sbil/sbi_life_-_smart_swadhan_neo_brochure_eng")},
+
+  {id:"saralswadhan", cat:"protection", name:"Saral Swadhan Supreme", uin:"111N139V02",
+   tag:"Easy-issue return-of-premium cover, ₹25 lakh to ₹50 lakh",
+   ref:"3F/ver1/06/26/BR/ENG",
+   lead:"For example, a 40-year-old woman takes <b>₹50,00,000</b> of cover for 25 years for ₹42,998 a year. If she outlives the term she gets back <b>₹10,74,950</b>, everything she paid.",
+   tiles:[
+    ["100%","Every premium comes back to you","If nothing happens during the term, all the premiums you paid are returned at maturity."],
+    ["Easy","Simple to get","Life cover with ease of issuance."],
+    ["₹25–50 L","Cover sized for your family","Choose cover from ₹25 lakh to ₹50 lakh."],
+    ["10–30 yrs","Choose your own term","Take cover for 10 to 30 years."],
+    ["7 yrs","Finish paying early","Pay throughout, or complete your premiums in 7, 10 or 15 years."],
+    ["Loan","Money when you need it","You can borrow up to 50% of the surrender value, and add accident cover."]],
+   note:N_ROP,
+   glance:[
+    ["Type","Non-linked, non-participating life insurance savings plan with return of premium"],
+    ["Entry age","18 to 50 years"],
+    ["Maturity age","Up to 65 years"],
+    ["Policy term","Regular pay 10 to 30 years · 7-pay and 10-pay 15 to 30 · 15-pay 20 to 30"],
+    ["Premium paying","Regular, or limited: 7, 10 or 15 years"],
+    ["Premium","₹8,050 to ₹2,18,500 a year. Half-yearly and monthly modes available"],
+    ["Sum assured","₹25,00,000 to ₹50,00,000, in multiples of ₹50,000"],
+    ["Death benefit","Highest of the sum assured, 11 × annual premium, or 105% of premiums paid"],
+    ["Maturity benefit","100% of total premiums paid"],
+    ["Riders","Accident Benefit Rider: accidental death up to ₹1.5 crore, partial permanent disability up to ₹50 lakh · Waiver of Premium Rider"],
+    ["Policy loan","Up to 50% of surrender value"],
+    ["Grace, revival, free look", G5]],
+   docs:docs("/term-insurance/saral-swadhan-supreme", "/documents/d/sbil/sbi_life_-_saral_swadhan_supreme_brochure_eng")},
+
+  /* ---------------- Retirement ---------------- */
+  {id:"retire", calc:true, cat:"retirement", name:"Retire Smart Plus", uin:"111L135V02",
+   tag:"Unit-linked pension plan to build a retirement fund",
+   ref:"2Y/ver1/09/25/BR/ENG",
+   lead:"For example, at age 30 you pay ₹1,00,000 a year for 25 years. At an assumed return of 4% a year your retirement fund could be <b>₹35.51 L</b>, and at 8% <b>₹63.11 L</b>, on ₹25.00 L paid in.",
+   tiles:[
+    ["Corpus","Build your own retirement fund","Your premiums are invested in the funds you choose, and the fund is yours at the retirement age you pick, between 30 and 70."],
+    ["+1.5%","A terminal addition at the end","An extra 1.5% of your fund value is added when the plan vests."],
+    ["Year 15","Loyalty additions for staying","From the end of the 15th year, a loyalty addition is credited to your fund every year."],
+    ["7","Pension funds to choose from","From equity to bond and money market, with unlimited free switches."],
+    ["60%","Take part of it in hand","At vesting you can take up to 60% as a lump sum and use the rest for a lifelong pension."],
+    ["105%","Your family is protected","If you are not there, your family receives the higher of the fund value with terminal addition, or 105% of the premiums paid."]],
+   more:"if you are under 60 at vesting, you can extend the plan and keep building, up to age 70.",
+   note:"this is a market-linked plan, so returns are not guaranteed and the investment risk is yours. 4% and 8% are assumed rates used for illustration, not minimum or maximum returns. You cannot withdraw or surrender for payout during the first 5 years. Ask for your policy-specific benefit illustration before you decide.",
+   glance:[
+    ["Type","Unit-linked, non-participating pension savings plan"],
+    ["Entry age","20 to 60 years"],
+    ["Vesting age","30 to 70 years"],
+    ["Policy term","10 to 35 years; at least 15 with a 10-year paying term and 20 with a 15-year paying term"],
+    ["Premium paying","Regular (whole term), limited (5 to 8, 10 or 15 years), or single"],
+    ["Minimum premium","Regular ₹30,000 a year · Limited ₹40,000 a year · Single ₹1,00,000. Half-yearly and monthly modes available"],
+    ["Maximum premium","No limit, subject to underwriting"],
+    ["Vesting benefit","Fund value plus terminal addition of 1.5% of fund value"],
+    ["Loyalty additions","0.30% of average fund value every year from the end of year 15. Not for terms of 10 to 14 years"],
+    ["Death benefit","Higher of fund value plus terminal addition, or 105% of premiums paid"],
+    ["At vesting","Buy an annuity with the whole amount, or commute up to 60% and buy an annuity with the rest, or extend to age 70 if under 60"],
+    ["Funds","7 pension funds. Unlimited free switches"],
+    ["Charges","Allocation 6% in year 1, 4.75% in year 2, 4% in years 3–10, 2.5% from year 11 (single 3%) · administration ₹45 a month in years 1–5, then ₹70 · fund management 0.25% to 1.35% a year"],
+    ["Partial withdrawals","After the 5-year lock-in, for listed needs only. Up to 25% of fund value, at most 3 times in the term"],
+    ["Grace, revival, free look", G3]],
+   docs:docs("/retirement-pension-plans/retire-smart-plus", "/documents/d/sbil/retire-smart-plus-product-brochure-prospectus")},
+
+  {id:"annuity", cat:"retirement", name:"Smart Annuity Plus", uin:"111N134V10",
+   tag:"One payment, guaranteed pension for life",
+   ref:"2W/ver1/03/26/BR/ENG",
+   lead:"For example, at age 60 you invest ₹10,00,000 once and receive a guaranteed <b>₹77,826</b> every year for life under the Life Annuity option.",
+   tiles:[
+    ["For life","A guaranteed income as long as you live","You pay once and receive a regular income for the rest of your life."],
+    ["14 options","Shape the pension around your family","Choose income for yourself or jointly with your spouse, with or without your purchase price returned to your family."],
+    ["Now or later","Start today, or after a few years","Begin your income at once, or defer it by 1 to 10 years."],
+    ["+5%","Income that can rise every year","Pick an option where your income grows by 3% or 5% every year."],
+    ["Spouse","Your spouse keeps the full income","Under the joint life options, the same income continues for your spouse after you."],
+    ["More","A bigger amount earns a better rate","A purchase price of ₹10 lakh and above earns a higher annuity rate."]],
+   more:"you choose whether the income comes monthly, quarterly, half-yearly or yearly.",
+   note:N_ANN + " Under options without return of purchase price, nothing is paid to the family after death.",
+   glance:[
+    ["Type","Non-linked, non-participating general annuity plan. Single premium"],
+    ["Entry age","30 to 95 years; 45 to 75 for the deferred options"],
+    ["Purchase price","Enough to give the minimum annuity; no upper limit"],
+    ["Minimum annuity","₹1,000 a month · ₹3,000 a quarter · ₹6,000 a half-year · ₹12,000 a year"],
+    ["Single life options","Life annuity · with return of purchase price · with return of balance purchase price · rising 3% or 5% a year, simple or compound · with 10 or 20 years certain · deferred with return of purchase price"],
+    ["Joint life options","Life and last survivor 100% · the same with return of purchase price · deferred with return of purchase price · NPS family income"],
+    ["Deferment","1 to 10 years, on the deferred options"],
+    ["Higher purchase price","Extra annuity per ₹1,000 from ₹10 lakh, rising at ₹25 lakh, ₹50 lakh and ₹1 crore"],
+    ["Death benefit","Depends on the option: nil on plain and increasing annuities; purchase price returned on the return-of-purchase-price options"],
+    ["Surrender","Only under the deferred options and the full return-of-purchase-price options"],
+    ["Policy loan, maturity value","Not available"],
+    ["Free look","30 days"]],
+   docs:docs("/retirement-pension-plans/smart-annuity-plus", "/documents/d/sbil/smart-annuity-plus-product-brochure-prospectus")},
+
+  {id:"saralpension", cat:"retirement", name:"Saral Pension", uin:"111N130V03",
+   tag:"Standard immediate annuity with your purchase price returned",
+   ref:"2R/ver1/09/25/BR/ENG",
+   lead:"For example, at age 60 you invest ₹10,00,000 once and receive a guaranteed <b>₹60,560</b> every year for life. When you are no longer there, your family gets the <b>₹10,00,000</b> back.",
+   tiles:[
+    ["For life","A guaranteed income as long as you live","You pay once and the income starts at once, at a rate that never changes."],
+    ["100%","Your money comes back to your family","The whole purchase price is returned to your nominee after you."],
+    ["Spouse","Your spouse keeps the full income","Under the joint life option the same income continues for your spouse, and the purchase price is returned after both of you."],
+    ["Loan","Borrow against it if you must","A loan is available any time after six months."],
+    ["95%","A way out in a serious illness","If you are diagnosed with a specified critical illness, you can surrender and receive 95% of the purchase price."],
+    ["More","A bigger amount earns a better rate","A purchase price of ₹5 lakh and above earns a higher annuity rate."]],
+   more:"you choose whether the income comes monthly, quarterly, half-yearly or yearly.",
+   note:N_ANN,
+   glance:[
+    ["Type","Non-linked, non-participating immediate annuity plan (standard product). Single premium"],
+    ["Entry age","40 to 80 years; both lives for joint annuity"],
+    ["Purchase price","Enough to give the minimum annuity; no upper limit"],
+    ["Minimum annuity","₹1,000 a month · ₹3,000 a quarter · ₹6,000 a half-year · ₹12,000 a year"],
+    ["Options","Life annuity with return of 100% of purchase price · Joint life last survivor annuity with return of purchase price on the last survivor's death"],
+    ["Higher purchase price","Extra annuity per ₹1,000: 2.75 from ₹5 lakh, 3.75 from ₹10 lakh, 4.25 from ₹25 lakh"],
+    ["Death benefit","Purchase price paid to the nominee; under joint life, after the last survivor"],
+    ["Policy loan","After 6 months. Yearly loan interest may not exceed 50% of the yearly annuity"],
+    ["Surrender","After 6 months, only on diagnosis of a specified critical illness of the annuitant, spouse or child: 95% of purchase price"],
+    ["Staff benefit","Annuity raised by 2% for eligible SBI group staff and family"],
+    ["Free look","15 days (30 for electronic and distance sales)"]],
+   docs:docs("/retirement-pension-plans/saral-pension", "/documents/d/sbil/product-brochure-prospectus")},
+
+  {id:"annuityincome", cat:"retirement", name:"Smart Annuity Income", uin:"111N149V05",
+   tag:"Annuity for NPS subscribers only",
+   ref:"3H/ver1/02/26/BR/ENG",
+   lead:"This plan is open only to National Pension System subscribers. For example, at age 60 you use ₹10,00,000 of your NPS corpus and receive a guaranteed <b>₹6,423</b> every month for life under the Single Life Annuity option.",
+   tiles:[
+    ["NPS","Turn your NPS savings into a pension","Use your NPS corpus to buy a lifelong income from SBI Life."],
+    ["For life","A guaranteed income as long as you live","You pay once and the income is paid for the rest of your life at a fixed rate."],
+    ["5 options","Choose what suits your family","Single life or joint life, each with or without return of purchase price, and a Family Income option."],
+    ["Spouse","Your spouse keeps the full income","Under the joint life options, 100% of the income continues for the survivor."],
+    ["100%","Your money can come back to your family","Under the return-of-purchase-price options, the whole purchase price is paid to your nominee."],
+    ["More","A bigger amount earns a better rate","A purchase price of ₹10 lakh and above earns a higher annuity rate."]],
+   more:"you choose whether the income comes monthly, quarterly, half-yearly or yearly.",
+   note:N_ANN + " The option cannot be changed once chosen, and the plan cannot be surrendered. Under options without return of purchase price, nothing is paid to the family after death.",
+   glance:[
+    ["Type","Non-linked, non-participating general annuity plan. Single premium"],
+    ["Who can buy","Subscribers of the National Pension System only"],
+    ["Purchase price","Enough to give the minimum annuity under PFRDA rules; no upper limit"],
+    ["Minimum annuity","₹1,000 a month · ₹3,000 a quarter · ₹6,000 a half-year · ₹12,000 a year; may be lower under PFRDA rules"],
+    ["Options","Single life · single life with return of purchase price · joint life · joint life with return of purchase price · family income"],
+    ["Joint life","Age difference of up to 30 years between the two annuitants"],
+    ["Higher purchase price","Extra annuity per ₹1,000: 1.50 from ₹10 lakh, 2.10 from ₹25 lakh, 2.35 from ₹50 lakh, 2.50 from ₹1 crore"],
+    ["Death benefit","Nil on the plain options; purchase price returned on the return-of-purchase-price options"],
+    ["Policy loan","Only on the return-of-purchase-price options, after 6 months"],
+    ["Surrender","Not allowed"],
+    ["Free look","30 days"]],
+   docs:docs("/retirement-pension-plans/sbi-life-smart-annuity-income", "/documents/d/sbil/smart-annuity-income-product-brochure-prospectus")}
+  ];
+})();
+
+</script>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var current = 'spp', cfg = ENG.P.spp;
+  var inr0 = new Intl.NumberFormat('en-IN', {maximumFractionDigits:0});
+  function rs(x){ return '₹' + inr0.format(Math.round(x)); }
+  function plain(x){ return inr0.format(Math.round(x)); }
+  function short(x){
+    var a = Math.abs(x);
+    if (a>=1e7) return '₹' + (x/1e7).toFixed(2) + ' Cr';
+    if (a>=1e5) return '₹' + (x/1e5).toFixed(2) + ' L';
+    return rs(x);
+  }
+  function pct(x, d){ return (x*100).toFixed(d==null?2:d) + '%'; }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  var funds = [{id:'bluechip', pct:100}];
+  var view = 'summary', lastSig = null;
+
+  // Past NAV returns. y1/y3/si and benchmark si: SBI Life fund factsheets at `asOn`.
+  // y5/y10: Value Research via Policybazaar, early Oct 2026. null = not published or not read.
+  var PERF = {
+    bluechip:{asOn:'31 Aug 2026', since:2024, y1:1.91,  y3:null,  y5:null,  y10:null,  si:0.11,  bsi:-1.28},
+    equity:  {asOn:'31 Jul 2026', since:2005, y1:-1.84, y3:8.30,  y5:7.60,  y10:10.53, si:14.84, bsi:12.34},
+    top300:  {asOn:'31 Aug 2026', since:2010, y1:0.63,  y3:8.02,  y5:5.68,  y10:10.49, si:10.94, bsi:9.25},
+    eqopt:   {asOn:'30 Jun 2026', since:2008, y1:-3.21, y3:9.23,  y5:6.65,  y10:10.03, si:9.55,  bsi:7.74},
+    midcap:  {asOn:'31 Aug 2026', since:2016, y1:14.05, y3:18.22, y5:12.95, y10:15.40, si:17.78, bsi:16.55},
+    pure:    {asOn:'30 Jun 2026', since:2016, y1:-3.22, y3:8.78,  y5:5.66,  y10:9.35,  si:10.62, bsi:null},
+    growth:  {asOn:'30 Jun 2026', since:2005, y1:-2.74, y3:8.59,  y5:5.84,  y10:9.66,  si:11.45, bsi:10.25},
+    balanced:{asOn:'30 Jun 2026', since:2005, y1:-1.04, y3:7.44,  y5:5.31,  y10:8.39,  si:10.12, bsi:9.65},
+    bondopt: {asOn:'31 Aug 2026', since:2019, y1:3.77,  y3:7.28,  y5:6.10,  y10:null,  si:11.50, bsi:8.19},
+    corpbond:{asOn:'31 Aug 2026', since:2019, y1:4.44,  y3:6.40,  y5:5.16,  y10:null,  si:7.02,  bsi:7.34},
+    bond:    {asOn:'31 Aug 2026', since:2005, y1:4.35,  y3:6.44,  y5:5.19,  y10:6.01,  si:7.87,  bsi:7.09},
+    mm:      {asOn:'31 Aug 2026', since:2006, y1:6.07,  y3:6.69,  y5:6.06,  y10:5.88,  si:6.64,  bsi:6.78},
+    elite2:  {asOn:'early Oct 2026', since:2010, y1:null, y3:null, y5:5.95, y10:9.64, si:null, bsi:null},
+    eqpen:   {asOn:'31 Aug 2026', since:2007, y1:4.92, y3:10.51, y5:6.66, y10:10.85, si:10.89, bsi:9.07},
+    eqoptpen:{asOn:'31 Aug 2026', since:2008, y1:2.05, y3:9.76,  y5:6.99, y10:10.89, si:10.05, bsi:7.72},
+    growpen: {asOn:'31 Aug 2026', since:2007, y1:3.87, y3:9.86,  y5:6.60, y10:10.27, si:10.85, bsi:8.00},
+    top300pen:{asOn:'31 Aug 2026', since:2010, y1:3.18, y3:8.67, y5:5.99, y10:10.78, si:10.90, bsi:9.26},
+    balpen:  {asOn:'31 Aug 2026', since:2007, y1:2.11, y3:8.09,  y5:5.75, y10:9.27,  si:10.77, bsi:8.64},
+    bondpen: {asOn:'30 Jun 2026', since:2007, y1:4.51, y3:6.78,  y5:5.20, y10:6.29,  si:8.16,  bsi:7.44},
+    mmpen:   {asOn:'31 Aug 2026', since:2008, y1:6.01, y3:6.63,  y5:6.01, y10:5.85,  si:6.98,  bsi:6.78}
+  };
+  var SHEET = {bluechip:'SBI_Bluechip_Fund.pdf', equity:'SBI_Equity_Fund.pdf', top300:'SBI_Top_300_Fund.pdf', eqopt:'SBI_Equity_Optimiser_Fund.pdf',
+    midcap:'SBI_Midcap_Fund.pdf', pure:'SBI_Pure_Fund.pdf', growth:'SBI_Growth_Fund.pdf', balanced:'SBI_Balanced_Fund.pdf', bondopt:'SBI_Bond_Optimiser_Fund.pdf',
+    corpbond:'SBI_CorporateBond_Fund.pdf', bond:'SBI_Bond_Fund.pdf', mm:'SBI_Money_Market_Fund.pdf',
+    eqpen:'SBI_EquityPension_Fund.pdf', eqoptpen:'SBI_EquityOptimiserPension_Fund.pdf', growpen:'SBI_GrowthPension_Fund.pdf', top300pen:'SBI_Top300Pension_Fund.pdf',
+    balpen:'SBI_BalancedPension_Fund.pdf', bondpen:'SBI_BondPension_Fund.pdf', mmpen:'SBI_MoneyMarketPension_Fund.pdf'};
+  var SHEET_BASE = 'https://static.pbcdn.in/investment-cdn/pdfs/FundFactSheet/';
+  var PERIODS = [['y3','3 yr'], ['y5','5 yr'], ['y10','10 yr'], ['si','since inception']];
+  var BASIS = {y10:'10-year', y5:'5-year', y3:'3-year', si:'since-inception'};
+  function sgn(v){ return (v<0 ? '−' : '') + Math.abs(v).toFixed(2); }
+  function gross(net, fmc){ return Math.round(((1+net/100)*Math.exp(fmc/100)-1)*10000)/100; }
+  function retBtn(v, fmc, label){
+    if (v==null) return '–';
+    return '<button type="button" class="ret' + (v<0 ? ' neg' : '') + '" data-net="' + v + '" data-fmc="' + fmc + '" data-label="' + esc(label) + '" title="Use as rate of return">' + sgn(v) + '</button>';
+  }
+  function fundRate(basis){
+    var net = 0, wf = 0, subs = [], missing = [];
+    funds.forEach(function(f){
+      if (!(f.pct>0)) return;
+      var F = ENG.fund(f.id), d = PERF[f.id] || {}, v = d[basis];
+      if (v==null){ v = d.si; if (v!=null) subs.push(F.name + ' (record starts ' + d.since + ')'); }
+      if (v==null){ missing.push(F.name); return; }
+      net += f.pct/100*v; wf += f.pct/100*F.fmc;
+    });
+    net = Math.round(net*100)/100; wf = Math.round(wf*100)/100;
+    return {net:net, fmc:wf, gross:gross(net, wf), subs:subs, missing:missing};
+  }
+  function renderPerf(){
+    var inSplit = {}, tot = 0;
+    if (!isAuto()) funds.forEach(function(f){ if (f.pct>0){ inSplit[f.id] = f.pct; tot += f.pct; } });
+    var h = '<thead><tr><th>Fund</th><th>1 yr</th><th>3 yr</th><th>5 yr</th><th>10 yr</th><th>Since inception</th><th>Benchmark since inception</th></tr></thead><tbody>';
+    cfg.funds.forEach(function(id){
+      var F = ENG.fund(id), d = PERF[id] || {};
+      var nm = SHEET[id] ? '<a href="' + SHEET_BASE + SHEET[id] + '" target="_blank" rel="noopener" title="Open factsheet">' + esc(F.name) + '</a>' : esc(F.name);
+      h += '<tr' + (inSplit[id] ? ' class="insplit"' : '') + '><td class="fund"><b>' + nm + '</b><small>FMC ' + F.fmc.toFixed(2) + '% · from ' + d.since + ' · as on ' + d.asOn + '</small></td>' +
+        '<td' + (d.y1<0 ? ' class="neg"' : '') + '>' + (d.y1==null ? '–' : sgn(d.y1)) + '</td>' +
+        PERIODS.map(function(P){ return '<td>' + retBtn(d[P[0]], F.fmc, F.name + ' ' + P[1]) + '</td>'; }).join('') +
+        '<td>' + (d.bsi==null ? '–' : sgn(d.bsi)) + '</td></tr>';
+    });
+    h += '</tbody>';
+    var ids = Object.keys(inSplit);
+    if (ids.length>1 && tot===100){
+      var wf = 0; ids.forEach(function(id){ wf += inSplit[id]/100*ENG.fund(id).fmc; });
+      var w = function(k){ var s = 0; for (var i=0;i<ids.length;i++){ var v = (PERF[ids[i]]||{})[k]; if (v==null) return null; s += inSplit[ids[i]]/100*v; } return Math.round(s*100)/100; };
+      h += '<tfoot><tr><td>Your fund split, weighted</td><td>' + (w('y1')==null ? '–' : sgn(w('y1'))) + '</td>' +
+        ['y3','y5','y10'].map(function(k, i){ return '<td>' + retBtn(w(k), Math.round(wf*100)/100, 'Your fund split ' + PERIODS[i][1]) + '</td>'; }).join('') + '<td>–</td><td>–</td></tr></tfoot>';
+    }
+    $('perf').innerHTML = h;
+  }
+
+  function plan(){ var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : cfg.types[0]; }
+  function opt(){ var r = document.querySelector('input[name=opt]:checked'); return r ? r.value : null; }
+  function isAuto(){ return !!(cfg.growthOpt && opt()===cfg.growthOpt); }
+  function numv(id){ var v = parseFloat($(id).value); return isNaN(v) ? NaN : v; }
+
+  function renderFunds(){
+    // Drop anything that is not a fund of the current plan, or is listed twice.
+    funds = funds.filter(function(f, i){ return cfg.funds.indexOf(f.id)>=0 && funds.findIndex(function(g){ return g.id===f.id; })===i; });
+    if (!funds.length) funds = cfg.def.map(function(f){ return {id:f.id, pct:f.pct}; });
+    var box = $('funds'); box.innerHTML = '';
+    funds.forEach(function(f, i){
+      var row = document.createElement('div'); row.className = 'fundrow';
+      var sel = document.createElement('select'); sel.id = 'fund-sel-'+i; sel.setAttribute('aria-label','Fund '+(i+1));
+      // Only this plan's funds, and not one already chosen in another row.
+      cfg.funds.forEach(function(id){
+        if (id!==f.id && funds.some(function(g){ return g.id===id; })) return;
+        var F = ENG.fund(id), o = document.createElement('option'); o.value = id; o.textContent = F.name + ' · ' + F.fmc.toFixed(2) + '%';
+        if (id===f.id) o.selected = true; sel.appendChild(o);
+      });
+      sel.addEventListener('change', function(){ f.id = sel.value; renderFunds(); var again = $('fund-sel-'+i); if (again) again.focus(); compute(); });
+      var inp = document.createElement('input'); inp.type='number'; inp.min=0; inp.max=100; inp.step=1; inp.value=f.pct;
+      inp.id='fund-pct-'+i; inp.setAttribute('aria-label','Percent in fund '+(i+1));
+      inp.addEventListener('input', function(){ var v=parseFloat(inp.value); f.pct = isNaN(v)?0:v; compute(); });
+      var x = document.createElement('button'); x.type='button'; x.className='x'; x.textContent='×'; x.setAttribute('aria-label','Remove fund '+(i+1));
+      x.disabled = funds.length===1; x.hidden = funds.length===1;
+      x.addEventListener('click', function(){ funds.splice(i,1); renderFunds(); compute(); });
+      row.appendChild(sel); row.appendChild(inp); row.appendChild(x); box.appendChild(row);
+    });
+    $('add-fund').hidden = funds.length>=cfg.funds.length;
+  }
+
+  // Rebuild the parts of the form that depend on the plan.
+  function setupForm(){
+    ['regular','limited','single'].forEach(function(t){ $('lab-' + t).hidden = cfg.types.indexOf(t)<0; });
+    if (cfg.types.indexOf(plan())<0) $('plan-' + cfg.types[0]).checked = true;
+    var o = cfg.option;
+    $('opt-field').hidden = !o;
+    if (o){
+      $('opt-label').textContent = o.label; $('opt-hint').textContent = o.hint || '';
+      $('opt-seg').innerHTML = o.choices.map(function(c, i){ return '<label><input type="radio" name="opt" id="opt-' + c[0] + '" value="' + c[0] + '"' + (i===0 ? ' checked' : '') + '>' + esc(c[1]) + '</label>'; }).join('');
+    } else $('opt-seg').innerHTML = '';
+    $('mode').innerHTML = cfg.modes.map(function(m){ return '<option value="' + m + '">' + ENG.MODE_NAME[m] + '</option>'; }).join('');
+    $('mode-field').hidden = cfg.modes.length<2;
+    $('child-field').hidden = !cfg.child;
+    $('age-label').textContent = cfg.child ? 'Parent\'s age at entry' : 'Age at entry';
+    $('staff-wrap').hidden = !cfg.staff; $('staff').checked = false;
+    if (cfg.staff) $('staff-text').textContent = cfg.staffText;
+    $('mort-hint').textContent = 'The brochure does not print the mortality rate table. ' + cfg.mort + '% reproduces its figures closely.';
+    $('presets').innerHTML = '<span>Load brochure case:</span>' + cfg.presets.map(function(s, i){ return '<button class="btn" type="button" data-preset="' + i + '">' + esc(s.label) + '</button>'; }).join('');
+    $('perf-panel').hidden = false;
+    $('spp-extra').hidden = current!=='spp';
+    var common = ['The engine runs the policy month by month: premium less allocation charge is invested, charges are deducted on the first day of the month, the fund grows at the assumed return less the fund management charge, and additions are credited on their due dates.'];
+    var tail = ['4% and 8% are the standard illustration rates, not a floor or a ceiling. Any other rate you enter is an assumption for your own analysis. Actual returns depend on fund performance.',
+      'The Fund history rate is the past NAV return of your fund split, weighted by your percentages, with the fund management charge added back. It describes what the funds did, not what they will do, and a fund with a short record can pull it far from a sensible long-term figure.',
+      cfg.lead==='pension' ? 'Values are before tax. Pension plans have their own tax rules on commutation and annuity income; check with a tax advisor.'
+        : 'Values are before tax. The brochure says only to consult a tax advisor. Separately from the brochure: for unit-linked plans issued after 1 Feb 2021 with annual premium above ₹2.5 lakh, maturity proceeds do not get the usual exemption and gains are taxed as capital gains.'];
+    $('notes-list').innerHTML = common.concat(cfg.notes, tail).map(function(t){ return '<li>' + esc(t) + '</li>'; }).join('');
+  }
+
+  // The paying-term list holds only the terms this plan allows for the chosen plan type and policy term.
+  function allowedPpt(){
+    var pl = plan(), pt = numv('pt');
+    if (pl!=='limited') return isNaN(pt) ? [] : [pt];
+    if (cfg.pptList) return cfg.pptList.filter(function(v){
+      return isNaN(pt) || (v<pt && !(cfg.pptMinPt && cfg.pptMinPt[v] && pt<cfg.pptMinPt[v])); });
+    var out = []; if (!isNaN(pt)) for (var v=cfg.pptMin; v<=pt-1; v++) out.push(v);
+    return out;
+  }
+  // The policy-term list holds only the terms this plan allows for the plan type and the ages entered.
+  function allowedPt(){
+    var r = cfg.pt[plan()], age = numv('age'), child = cfg.child ? numv('child-age') : NaN, all = [], fit = [];
+    for (var v=r[0]; v<=r[1]; v++){
+      all.push(v);
+      if (!isNaN(age) && ((cfg.mat.min!=null && age+v<cfg.mat.min) || (cfg.mat.max!=null && age+v>cfg.mat.max))) continue;
+      if (cfg.child && !isNaN(child) && (child+v<cfg.child.matMin || child+v>cfg.child.matMax)) continue;
+      fit.push(v);
+    }
+    return {list: fit.length ? fit : all, narrowed: fit.length>0 && fit.length<all.length, none: !fit.length};
+  }
+  function buildPt(want){
+    var sel = $('pt'), a = allowedPt(), list = a.list, sig = list.join(',');
+    if (want==null || isNaN(want)) want = parseFloat(sel.value);
+    if (sel.getAttribute('data-sig')!==sig){
+      sel.innerHTML = list.map(function(v){ return '<option value="' + v + '">' + v + ' years</option>'; }).join('');
+      sel.setAttribute('data-sig', sig);
+    }
+    var pick = list[0];
+    if (!isNaN(want)) list.forEach(function(v){ if (Math.abs(v-want)<Math.abs(pick-want)) pick = v; });
+    sel.value = String(pick);
+    $('pt-hint').textContent = a.none ? 'No term fits these ages' : (list.length===1 ? list[0] + ' years only' : list[0] + ' to ' + list[list.length-1] + ' years') + (a.narrowed ? (cfg.child ? ' for these ages' : ' at this age') : '');
+  }
+  function buildPpt(want){
+    var sel = $('ppt'), list = allowedPpt(), sig = plan() + ':' + list.join(',');
+    if (want==null || isNaN(want)) want = parseFloat(sel.value);
+    if (sel.getAttribute('data-sig')!==sig){
+      sel.innerHTML = list.map(function(v){ return '<option value="' + v + '">' + v + (v===1 ? ' year' : ' years') + '</option>'; }).join('');
+      sel.setAttribute('data-sig', sig);
+    }
+    if (list.length){
+      var pick = list[0];
+      list.forEach(function(v){ if (v<=want) pick = v; });
+      sel.value = String(list.indexOf(want)>=0 ? want : pick);
+    }
+    sel.disabled = plan()!=='limited' || !list.length;
+  }
+
+  function syncForm(){
+    var pl = plan(), single = pl==='single', r = cfg.pt[pl];
+    $('pay-row').hidden = single;
+    buildPt(); buildPpt();
+    $('ppt-hint').textContent = pl!=='limited' ? 'Same as policy term' : !allowedPpt().length ? 'No paying term fits this policy term' : cfg.pptList ? 'Terms allowed for this policy term' : cfg.pptMin + ' to policy term − 1';
+    $('premium-label').textContent = single ? 'Single premium (₹)' : 'Annualized premium (₹)';
+    $('age').min = single && cfg.age.minSingle!=null ? cfg.age.minSingle : cfg.age.min;
+    $('age-hint').textContent = 'Last birthday';
+    var auto = isAuto();
+    $('funds-field').hidden = auto; $('strategy-note').hidden = !auto;
+  }
+
+  function read(){
+    return {plan:plan(), age:numv('age'), child:cfg.child ? numv('child-age') : null, pt:numv('pt'), ppt:numv('ppt'), mode:$('mode').value || cfg.modes[0], premium:numv('premium'), opt:opt(),
+      staff:!!(cfg.staff && $('staff').checked), mort:numv('mort'), gst:numv('gst'), funds:funds.map(function(f){ return {id:f.id, pct:f.pct}; })};
+  }
+
+  function matchPreset(p){
+    if (p.staff || p.gst!==0 || p.mort!==cfg.mort) return null;
+    for (var i=0;i<cfg.presets.length;i++){ var s = cfg.presets[i];
+      if (s.plan!==p.plan || s.age!==p.age || s.pt!==p.pt || (p.plan==='limited' && s.ppt!==p.ppt) || s.mode!==p.mode || s.premium!==p.premium) continue;
+      if ((s.opt||null)!==(p.opt||null) || (s.child!=null && s.child!==p.child)) continue;
+      if (!(cfg.growthOpt && p.opt===cfg.growthOpt)){
+        var a = JSON.stringify(s.funds), b = JSON.stringify(p.funds.filter(function(f){ return f.pct>0; }));
+        if (a!==b) continue;
+      }
+      return s;
+    }
+    return null;
+  }
+
+  function compute(){
+    if (!planById(current).calc) return;
+    syncForm();
+    var p = read();
+    // A blur fires "change" after "input" with nothing new; re-rendering then would swallow the click that caused the blur.
+    var sig = JSON.stringify([current, p, $('rate-4').checked, $('rate-8').checked, $('rate-other').checked, $('rate-custom').value, $('rate-fund').checked, $('rate-basis').value]);
+    if (sig===lastSig) return;
+    lastSig = sig;
+    renderPerf();
+    var tot = 0; funds.forEach(function(f){ tot += f.pct; });
+    $('fund-total').textContent = 'Total ' + tot + '%';
+    $('fund-total').className = 'small num ' + (tot===100 ? 'muted' : 'neg');
+    var single = p.plan==='single', modeN = single ? 1 : ENG.MODES[p.mode];
+    $('premium-echo').textContent = isNaN(p.premium) ? '' :
+      short(p.premium) + (!single && modeN>1 ? ' a year · ' + rs(p.premium/modeN) + ' per instalment' : single ? ' once' : ' a year');
+
+    var errs = [];
+    ['age','pt','premium','mort','gst'].forEach(function(k){ if (isNaN(p[k])) errs.push('Enter a number for every field.'); });
+    if (p.plan==='limited' && isNaN(p.ppt)) errs.push('Enter a premium paying term.');
+    if (cfg.child && isNaN(p.child)) errs.push('Enter the child\'s age.');
+    if (!errs.length) errs = ENG.validate(cfg, p);
+    var scen = [];
+    if ($('rate-4').checked) scen.push({rate:0.04, cls:'c-lo', name:'At 4% p.a.', short:'@ 4%'});
+    if ($('rate-8').checked) scen.push({rate:0.08, cls:'c-hi', name:'At 8% p.a.', short:'@ 8%'});
+    $('fund-wrap').hidden = !$('rate-fund').checked;
+    if ($('rate-fund').checked){
+      if (isAuto()){ $('fund-rate-note').textContent = ''; errs.push('Fund history is not available with the Growth strategy, because the fund mix changes every year. Untick it or switch to Active.'); }
+      else {
+        var basis = $('rate-basis').value, fr = fundRate(basis);
+        if (fr.missing.length){ $('fund-rate-note').textContent = ''; errs.push('No past-return figure is on file for ' + fr.missing.join(', ') + '. Untick Fund history or choose another fund.'); }
+        else {
+          $('fund-rate-note').textContent = sgn(fr.net) + '% ' + BASIS[basis] + ' NAV return of your split + ' + fr.fmc.toFixed(2) + '% FMC added back = ' + sgn(fr.gross) + '% assumed rate.' +
+            (fr.subs.length && basis!=='si' ? ' No ' + BASIS[basis] + ' record for ' + fr.subs.join(', ') + '; its since-inception return is used instead.' : '');
+          scen.push({rate:fr.gross/100, cls:'c-f', name:'Fund history · ' + sgn(fr.gross) + '% p.a.', short:'@ ' + sgn(fr.gross) + '% (funds)'});
+        }
+      }
+    }
+    $('other-wrap').hidden = !$('rate-other').checked;
+    if ($('rate-other').checked){
+      var w = numv('rate-custom');
+      if (isNaN(w) || w<-10 || w>25) errs.push('Enter your own rate of return between −10% and 25%.');
+      else if (!scen.some(function(s){ return Math.abs(s.rate-w/100)<1e-9; })) scen.push({rate:w/100, cls:'c-x', name:'At ' + w + '% p.a.', short:'@ ' + w + '%'});
+    }
+    if (!scen.length && !$('rate-other').checked && !$('rate-fund').checked) errs.push('Select at least one rate of return.');
+    errs = errs.filter(function(x,i){ return errs.indexOf(x)===i; });
+    var st = $('status');
+    if (errs.length){
+      st.className = 'status bad';
+      st.innerHTML = '<strong>Check the inputs. Results below are from the last valid inputs.</strong><ul>' +
+        errs.map(function(e){ return '<li>'+esc(e)+'</li>'; }).join('') + '</ul>';
+      return;
+    }
+    var mult = single ? cfg.sa.sp : cfg.sa.rp, sa = p.premium*mult;
+    st.className = 'status ok';
+    st.innerHTML = '<strong>Within product limits.</strong><span>' + (
+      cfg.lead==='pension' ? 'Vesting at age ' + (p.age+p.pt) + '. On death the family receives at least 105% of the premiums paid.'
+      : cfg.child ? 'The child is ' + (p.child+p.pt) + ' at maturity and the parent ' + (p.age+p.pt) + '. Sum assured ' + rs(sa) + ' (' + mult + ' × premium).'
+      : 'Maturity at age ' + (p.age+p.pt) + '. Sum assured ' + rs(sa) + ' (' + mult + ' × premium).') + '</span>';
+
+    scen.forEach(function(s){ s.r = ENG.project(cfg, p, s.rate); });
+    var r4 = ENG.project(cfg, p, 0.04), r8 = ENG.project(cfg, p, 0.08);
+    if (current==='spp') renderPitch(p, r4, r8); else renderCalcPitch(planById(current), p, r4, r8);
+    render(p, scen);
+  }
+
+  function render(p, scen){
+    var base = scen[0].r, preset = matchPreset(p), pension = cfg.lead==='pension';
+    $('scen').innerHTML = scen.map(function(s){
+      var r = s.r, rec = '';
+      if (preset && preset.target[s.rate]){
+        var t = preset.target[s.rate], d = (r.maturity/t-1)*100;
+        rec = '<div class="recon">Brochure ' + esc(preset.label.replace(/^Brochure /, '')) + ': ' + rs(t) + ' · diff ' + (d>=0?'+':'') + d.toFixed(3) + '%</div>';
+      }
+      return '<div class="card ' + s.cls + '"><div class="tag">' + esc(s.name) + '</div>' +
+        '<div class="big">' + rs(r.maturity) + '</div>' +
+        '<div class="sub">' + (pension ? 'Fund at vesting, with terminal addition' : 'Fund value at maturity') + ' · ' + short(r.maturity) + '</div>' + rec +
+        '<dl><dt>Net yield</dt><dd>' + pct(r.irr) + '</dd>' +
+        '<dt>Cost of charges</dt><dd>' + pct(s.rate - r.irr) + ' p.a.</dd>' +
+        '<dt>Multiple of premiums</dt><dd>' + (r.maturity/r.paid).toFixed(2) + '×</dd>' +
+        '<dt>Fund ≥ premiums paid</dt><dd>' + (r.breakeven ? 'year ' + r.breakeven : 'not reached') + '</dd></dl></div>';
+    }).join('');
+
+    var single = p.plan==='single';
+    var facts = [
+      pension ? ['Death benefit floor', '105% of premiums paid'] : ['Sum assured', rs(base.sa)],
+      ['Total premiums', rs(base.paid)],
+      [single ? 'Paid' : 'Instalment', single ? 'once' : rs(base.inst) + ' × ' + base.n + ' a year'],
+      ['Paying / policy term', (single ? 'single' : base.ppt + ' yrs') + ' / ' + p.pt + ' yrs'],
+      base.auto ? ['Fund mix', 'Equity to Bond, automatic'] : ['Weighted FMC', base.wfmc.toFixed(2) + '% p.a.'],
+      [cfg.addLabel || 'Additions', cfg.addLabel ? base.nAdds + (base.nAdds===1 ? ' credit' : ' credits') : 'None in this plan']
+    ];
+    $('facts').innerHTML = facts.map(function(f){ return '<div><span>' + esc(f[0]) + '</span><b>' + esc(f[1]) + '</b></div>'; }).join('');
+
+    var hasOther = scen.some(function(s){ return s.r.tot.other>0.5; }), hasAdds = !!cfg.addLabel;
+    var lines = [
+      ['Premiums paid', function(r){ return r.paid; }, ''],
+      ['Premium allocation charge', function(r){ return -r.tot.alloc; }, 'neg'],
+      ['Policy administration charge', function(r){ return -r.tot.admin; }, 'neg'],
+      ['Mortality charge', function(r){ return -r.tot.mort; }, 'neg']
+    ];
+    if (hasOther) lines.push([cfg.otherLabel || 'Other charges', function(r){ return -r.tot.other; }, 'neg']);
+    lines.push(['Fund management charge', function(r){ return -r.tot.fmc; }, 'neg']);
+    if (hasAdds) lines.push([cfg.addLabel, function(r){ return r.tot.loyalty; }, 'pos']);
+    if (p.staff) lines.push(['Staff additional allocation', function(r){ return r.tot.extra; }, 'pos']);
+    lines.push(['Investment growth before FMC', function(r){ return r.growth; }, 'pos']);
+    var h = '<thead><tr><th></th>' + scen.map(function(s){ return '<th>' + esc(s.name) + '</th>'; }).join('') + '</tr></thead><tbody>';
+    lines.forEach(function(l){
+      h += '<tr><td class="txt">' + esc(l[0]) + '</td>' + scen.map(function(s){
+        var v = l[1](s.r); return '<td class="' + (Math.round(v)===0 ? '' : l[2]) + '">' + (v<0 ? '−' : l[2]==='pos' && Math.round(v)>0 ? '+' : '') + plain(Math.abs(v)) + '</td>'; }).join('') + '</tr>';
+    });
+    h += '<tr class="total"><td class="txt">' + (pension ? 'Fund at vesting' : 'Fund value at maturity') + '</td>' + scen.map(function(s){ return '<td>' + plain(s.r.maturity) + '</td>'; }).join('') + '</tr>';
+    h += '<tr><td class="txt">All charges as % of premiums</td>' + scen.map(function(s){ var t=s.r.tot; return '<td>' + pct((t.alloc+t.admin+t.mort+t.other+t.fmc)/s.r.paid, 1) + '</td>'; }).join('') + '</tr></tbody>';
+    $('bridge').innerHTML = h;
+
+    var keys = ['summary'].concat(scen.map(function(s,i){ return 'c'+i; }));
+    if (keys.indexOf(view)<0) view = 'summary';
+    $('tabs').innerHTML = '<button type="button" data-v="summary" aria-pressed="' + (view==='summary') + '">Benefits</button>' +
+      scen.map(function(s,i){ return '<button type="button" data-v="c'+i+'" aria-pressed="' + (view==='c'+i) + '">Charges ' + esc(s.short) + '</button>'; }).join('');
+    Array.prototype.forEach.call($('tabs').children, function(b){ b.addEventListener('click', function(){ view = b.getAttribute('data-v'); render(p, scen); }); });
+
+    var t = '', dl = cfg.deathLabel || 'Death benefit';
+    if (view==='summary'){
+      t = '<thead><tr><th>Year</th><th>Age</th><th>Premium</th><th>Paid to date</th>' +
+        scen.map(function(s){ var n = esc(s.short); return '<th>Fund value ' + n + '</th><th>' + esc(dl) + ' ' + n + '</th>'; }).join('') + '</tr></thead><tbody>';
+      base.rows.forEach(function(r, i){
+        t += '<tr><td>' + r.year + (r.tag ? '<span class="la">' + esc(r.tag) + '</span>' : '') + '</td><td>' + r.age + '</td><td>' + (r.premium ? plain(r.premium) : '–') + '</td><td>' + plain(r.paid) + '</td>' +
+          scen.map(function(s){ var x = s.r.rows[i]; return '<td>' + plain(x.fv) + '</td><td>' + plain(x.death) + '</td>'; }).join('') + '</tr>';
+      });
+      t += '</tbody>';
+    } else {
+      var R = scen[+view.slice(1)].r, oth = R.tot.other>0.5;
+      t = '<thead><tr><th>Year</th><th>Premium</th><th>Allocation</th><th>Admin</th><th>Mortality</th>' + (oth ? '<th>' + esc(cfg.otherLabel || 'Other') + '</th>' : '') + '<th>FMC</th>' + (hasAdds ? '<th>' + esc(cfg.addLabel) + '</th>' : '') + (p.staff ? '<th>Staff allocation</th>' : '') + '<th>Fund value</th></tr></thead><tbody>';
+      R.rows.forEach(function(r){
+        t += '<tr><td>' + r.year + '</td><td>' + (r.premium ? plain(r.premium) : '–') + '</td><td>' + plain(r.alloc) + '</td><td>' + plain(r.admin) + '</td><td>' + plain(r.mort) + '</td>' + (oth ? '<td>' + plain(r.other) + '</td>' : '') + '<td>' + plain(r.fmc) + '</td>' +
+          (hasAdds ? '<td>' + (r.loyalty ? plain(r.loyalty) : '–') + '</td>' : '') + (p.staff ? '<td>' + (r.extra ? plain(r.extra) : '–') + '</td>' : '') + '<td>' + plain(r.fv) + '</td></tr>';
+      });
+      t += '</tbody><tfoot><tr><td>Total</td><td>' + plain(R.paid) + '</td><td>' + plain(R.tot.alloc) + '</td><td>' + plain(R.tot.admin) + '</td><td>' + plain(R.tot.mort) + '</td>' + (oth ? '<td>' + plain(R.tot.other) + '</td>' : '') + '<td>' + plain(R.tot.fmc) + '</td>' +
+        (hasAdds ? '<td>' + plain(R.tot.loyalty) + '</td>' : '') + (p.staff ? '<td>' + plain(R.tot.extra) + '</td>' : '') + '<td>' + plain(R.maturity) + '</td></tr></tfoot>';
+    }
+    $('yearly').innerHTML = t;
+    $('yearly-note').textContent = pension
+      ? 'Values are at each policy year end. Death benefit is the higher of fund value with terminal addition, or 105% of premiums paid.'
+      : cfg.child ? 'Values are at each policy year end. The lump sum on the parent\'s death is the higher of the sum assured or 105% of premiums paid; the fund then continues to maturity with premiums paid by SBI Life.'
+      : opt()==='plat' ? 'Values are at each policy year end. Under Platinum the death benefit is fund value plus sum assured, or 105% of premiums paid if higher.'
+      : 'Values are at each policy year end. Death benefit is the highest of fund value, sum assured and 105% of premiums paid; no partial withdrawals assumed.';
+  }
+
+  function joinAnd(a){ return a.length<2 ? a.join('') : a.slice(0,-1).join(', ') + ' and ' + a[a.length-1]; }
+  function payLine(p){
+    return p.plan==='single' ? 'You invest ' + short(p.premium) + ' once and stay invested for ' + p.pt + ' years.'
+      : p.plan==='limited' ? 'You invest ' + short(p.premium) + ' a year for ' + p.ppt + ' years and stay invested for ' + p.pt + '.'
+      : 'You invest ' + short(p.premium) + ' a year for ' + p.pt + ' years.';
+  }
+  function tilesHtml(tiles){ return '<div class="pgrid">' + tiles.map(function(t){ return '<div class="ptile"><div class="fig">' + esc(t[0]) + '</div><h3>' + esc(t[1]) + '</h3><p>' + esc(t[2]) + '</p></div>'; }).join('') + '</div>'; }
+
+  function renderPitch(p, r4, r8){
+    var single = p.plan==='single', LA = {6:1, 10:2.5, 15:3.5, 20:5, 25:6, 30:7};
+    var yrs = Object.keys(LA).map(Number).filter(function(y){ return y<=p.pt; });
+    var tiles = [];
+    tiles.push([single ? '1.25×' : '7×', 'Your family is protected from day one',
+      'Life cover of ' + rs(r4.sa) + ' for all ' + p.pt + ' years. If anything happens to you, your family receives whichever is highest: your fund value, the sum assured, or 105% of the premiums you have paid.']);
+    tiles.push(single
+      ? ['98%', 'Your money goes to work at once', '98% of your premium is invested on day one. There is no monthly administration charge, and the mortality charge is fixed for your whole term.']
+      : ['0%', 'More of your money gets invested', '97.5% of every premium is invested in the first 5 years, and all of it from year 6. The allocation and mortality charges are fixed for your whole term and cannot be raised.']);
+    tiles.push(yrs.length
+      ? [String(yrs.length), 'You are rewarded for staying', 'Loyalty additions are credited to your fund at the end of year' + (yrs.length>1 ? 's ' : ' ') + joinAnd(yrs.map(String)) + ': ' + joinAnd(yrs.map(function(y){ return LA[y] + '%'; })) +
+          ' of your average fund value. On your policy that is about ' + short(r4.tot.loyalty) + ' at 4% or ' + short(r8.tot.loyalty) + ' at 8%.']
+      : ['Year 6', 'Stay longer, earn more', 'Loyalty additions begin at the end of year 6 and rise to 7% by year 30. A ' + p.pt + '-year term ends before the first one, so choose a longer term to earn them.']);
+    tiles.push(['12', 'You choose where your money goes', 'Twelve funds, from equity and midcap to bond and money market. Switch between them or redirect your future premiums as often as you like, free of charge.']);
+    tiles.push(p.pt<6
+      ? ['5 yrs', 'Your money comes back in 5 years', 'Your term matches the 5-year lock-in, so your whole fund value is paid to you at maturity.']
+      : ['Year 6', 'Your money stays within reach', 'After the 5-year lock-in you can make partial withdrawals: two free every year, up to 15% of your fund value each time.']);
+    tiles.push(single
+      ? ['2–5 yrs', 'Your family can take it as income', 'Your nominee can choose to receive the death benefit in instalments spread over 2 to 5 years instead of one lump sum.']
+      : ['₹100', 'A small flat fee, however much you invest', 'Running the policy costs ₹100 a month at present, whether your premium is ₹6 lakh or ₹60 lakh. There is no GST on your premium.']);
+    $('pitch').innerHTML = '<h2>What Smart Privilege Plus does for you</h2>' +
+      '<p class="lead">' + payLine(p) + ' At an assumed return of 4% a year your fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. Your family is covered for <b>' + short(r4.sa) + '</b> from the first day.</p>' +
+      tilesHtml(tiles) +
+      '<p class="also"><b>There is more for you:</b> ' + (single ? 'there is no GST on your premium. ' : 'your nominee can choose to receive the death benefit in instalments over 2 to 5 years. ') + 'You can add accident death cover of up to 3 times your sum assured (maximum ₹2 crore).</p>' +
+      '<p class="also"><b>Please note:</b> this is a market-linked plan, so returns are not guaranteed and the investment risk is yours. 4% and 8% are assumed rates used for illustration, not minimum or maximum returns. You cannot withdraw or surrender for payout during the first 5 years. Ask for your policy-specific benefit illustration before you decide.</p>';
+  }
+
+  // Other unit-linked plans: the opening line follows the inputs, the six points come from the plan's own brochure.
+  function renderCalcPitch(pl, p, r4, r8){
+    var lead;
+    if (cfg.lead==='pension') lead = payLine(p) + ' At an assumed return of 4% a year your retirement fund could be <b>' + short(r4.maturity) + '</b> at age ' + (p.age+p.pt) + ', and at 8% <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in.';
+    else if (cfg.lead==='child') lead = payLine(p).replace(/\.$/, '') + ' for your child, now aged ' + p.child + '. At an assumed return of 4% a year the fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. You are covered for <b>' + short(r4.sa) + '</b>, and the plan carries on even if you are not there.';
+    else lead = payLine(p) + ' At an assumed return of 4% a year your fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. Your family is covered for <b>' + short(r4.sa) + '</b> from the first day.';
+    $('pitch').innerHTML = '<h2>What ' + esc(pl.name) + ' does for you</h2><p class="lead">' + lead + '</p>' + tilesHtml(pl.tiles) +
+      (pl.more ? '<p class="also"><b>There is more for you:</b> ' + esc(pl.more) + '</p>' : '') +
+      '<p class="also"><b>Please note:</b> ' + esc(pl.note) + '</p>';
+  }
+
+  function load(i){
+    var s = cfg.presets[i];
+    $('plan-' + s.plan).checked = true;
+    if (s.opt && $('opt-' + s.opt)) $('opt-' + s.opt).checked = true;
+    $('age').value = s.age; if (s.child!=null) $('child-age').value = s.child;
+    buildPt(s.pt); buildPpt(s.ppt); $('mode').value = s.mode; $('premium').value = s.premium;
+    $('staff').checked = false; $('gst').value = 0; $('mort').value = cfg.mort;
+    $('rate-4').checked = true; $('rate-8').checked = true; $('rate-other').checked = false; $('rate-fund').checked = false; $('perf-msg').textContent = '';
+    funds = s.funds.map(function(f){ return {id:f.id, pct:f.pct}; });
+    renderFunds(); lastSig = null; compute();
+  }
+
+  $('form').addEventListener('input', compute);
+  $('form').addEventListener('change', compute);
+  $('form').addEventListener('submit', function(e){ e.preventDefault(); });
+  $('add-fund').addEventListener('click', function(){
+    var used = funds.map(function(f){ return f.id; }), tot = 0; funds.forEach(function(f){ tot += f.pct; });
+    var next = cfg.funds.filter(function(id){ return used.indexOf(id)<0; })[0];
+    if (!next) return;
+    funds.push({id:next, pct:Math.max(0, 100-tot)}); renderFunds(); compute();
+  });
+  $('perf').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button.ret') : null;
+    if (!b) return;
+    var net = parseFloat(b.getAttribute('data-net')), fmc = parseFloat(b.getAttribute('data-fmc')), g = gross(net, fmc);
+    $('rate-other').checked = true; $('rate-custom').value = g;
+    $('perf-msg').textContent = 'Using ' + g.toFixed(2) + '% as your rate: ' + b.getAttribute('data-label') + ' NAV return ' + sgn(net) + '% with the ' + fmc.toFixed(2) + '% FMC added back.';
+    compute();
+  });
+  $('presets').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-preset]') : null; if (!b) return;
+    load(+b.getAttribute('data-preset'));
+  });
+
+  function planById(id){ for (var i=0;i<PLANS.length;i++) if (PLANS[i].id===id) return PLANS[i]; return null; }
+  function renderPicker(){
+    var pl = planById(current);
+    $('cats').innerHTML = PLAN_CATS.map(function(c){
+      var n = PLANS.filter(function(x){ return x.cat===c.id; }).length;
+      return '<button type="button" data-cat="' + c.id + '" aria-pressed="' + (c.id===pl.cat) + '">' + esc(c.name) + ' · ' + n + '</button>';
+    }).join('');
+    $('plist').innerHTML = PLANS.filter(function(x){ return x.cat===pl.cat; }).map(function(x){
+      return '<button type="button" data-plan="' + x.id + '" aria-pressed="' + (x.id===current) + '">' + esc(x.name) + '</button>';
+    }).join('');
+    $('ptag').innerHTML = '<b>SBI Life – ' + esc(pl.name) + '</b> · UIN ' + esc(pl.uin) + ' · ' + esc(pl.tag);
+  }
+  function renderStaticPitch(pl){
+    $('pitch').innerHTML = '<h2>What ' + esc(pl.name) + ' does for you</h2>' +
+      '<p class="lead">' + pl.lead + '</p>' + tilesHtml(pl.tiles) +
+      (pl.more ? '<p class="also"><b>There is more for you:</b> ' + esc(pl.more) + '</p>' : '') +
+      '<p class="also"><b>Please note:</b> ' + esc(pl.note) + '</p>';
+  }
+  function renderGlance(pl){
+    $('glance-sub').textContent = 'SBI Life – ' + pl.name + ' · UIN ' + pl.uin;
+    $('glance-dl').innerHTML = pl.glance.concat([['Source', pl.ref.indexOf('Product page')===0 ? 'SBI Life ' + pl.ref.charAt(0).toLowerCase() + pl.ref.slice(1) : 'SBI Life sales brochure, ref ' + pl.ref]]).map(function(r){
+      return '<div><dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd></div>'; }).join('');
+    $('glance-links').innerHTML = pl.docs.map(function(d){ return '<a href="' + esc(d[1]) + '" target="_blank" rel="noopener">' + esc(d[0]) + '</a>'; }).join('');
+  }
+  function selectPlan(id, keepHash){
+    var pl = planById(id) || planById('spp');
+    current = pl.id;
+    renderPicker(); renderGlance(pl);
+    $('calc').hidden = !pl.calc; $('nocalc').hidden = !!pl.calc;
+    if (pl.calc){ cfg = ENG.P[pl.id]; view = 'summary'; setupForm(); load(0); }
+    else {
+      renderStaticPitch(pl);
+      $('nocalc-text').textContent = 'The return calculator on this page covers the six unit-linked plans. For ' + pl.name + ', use SBI Life’s own calculator on the product page to work out this customer’s premium and benefits, and give them the policy-specific benefit illustration before the sale.';
+      $('nocalc-link').href = pl.docs[pl.docs.length-1][1];
+    }
+    if (!keepHash){ try { history.replaceState(null, '', '#' + pl.id); } catch (e) {} }
+  }
+  $('cats').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-cat]') : null; if (!b) return;
+    var first = PLANS.filter(function(x){ return x.cat===b.getAttribute('data-cat'); })[0];
+    if (first && first.cat!==planById(current).cat) selectPlan(first.id);
+  });
+  $('plist').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('button[data-plan]') : null; if (!b) return;
+    if (b.getAttribute('data-plan')!==current) selectPlan(b.getAttribute('data-plan'));
+  });
+  var start = (location.hash || '').replace('#','');
+  selectPlan(planById(start) ? start : 'spp', true);
+  window.addEventListener('hashchange', function(){
+    var h = (location.hash || '').replace('#','');
+    if (planById(h) && h!==current) selectPlan(h, true);
+  });
+})();
+
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
+</body>
+</html>
