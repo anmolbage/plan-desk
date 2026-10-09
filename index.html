@@ -96,7 +96,6 @@ header.top .meta{font-size:13px;line-height:1.45;color:var(--muted);max-width:92
 .share:hover{filter:brightness(.96)}
 .share svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .pitch .share:focus-visible{outline-color:var(--band-hi)}
-.pmore{display:none}
 .sheet{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:rgba(8,16,12,.9)}
 .sheet img{display:block;max-width:min(100%,420px);max-height:calc(100dvh - 150px);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .sheet .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -252,19 +251,12 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
   .pitch h2{font-size:18px}
   .share{font-size:12.5px;padding:6px 12px}
   .share svg{width:15px;height:15px}
-  /* poster: all six points on one screen, figure and title only */
-  .pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-  .ptile{border-radius:14px;padding:11px 12px;gap:3px}
-  .ptile .fig{font-size:22px}
-  .ptile h3{font-size:12.5px;line-height:1.3}
-  .ptile p,.pitch .also.more{display:none}
-  .pmore{display:block;font-size:12.5px;line-height:1.5;color:var(--band-mute)}
-  .pmore summary{cursor:pointer;font-weight:700;color:var(--band-ink)}
-  .pmore dl{margin:8px 0 0;display:flex;flex-direction:column;gap:2px}
-  .pmore dt{font-weight:700;color:var(--band-ink);margin-top:6px}
-  .pmore dd{margin:0}
-  .pmore p{margin-top:10px}
-  .pmore p b{color:var(--band-ink)}
+  /* six points as one list: figure and title on a line, the explanation under it */
+  .pgrid{grid-template-columns:minmax(0,1fr);gap:6px}
+  .ptile{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;row-gap:3px;align-items:baseline;border-radius:14px;padding:10px 12px}
+  .ptile .fig{font-size:19px;line-height:1.15}
+  .ptile h3{font-size:13.5px;line-height:1.3}
+  .ptile p{grid-column:1/-1;font-size:12px;line-height:1.4}
   .pitch .also{font-size:11.5px;line-height:1.45}
 
   .panel{padding:14px;border-radius:16px;gap:12px}
@@ -2125,7 +2117,7 @@ var PLANS = (function(){
   function tilesHtml(tiles){ return '<div class="pgrid">' + tiles.map(function(t){ return '<div class="ptile"><div class="fig">' + esc(t[0]) + '</div><h3>' + esc(t[1]) + '</h3><p>' + esc(t[2]) + '</p></div>'; }).join('') + '</div>'; }
 
   // One place builds the pitch. lead, more and note are HTML-safe strings; tiles are [figure, title, text].
-  // On phones the tiles show figure and title only, so the whole pitch fits one screen; the texts sit in a fold below.
+  // On phones the tiles stack as one list: figure and title on a line, the explanation under it.
   var pitchData = null;
   var SHARE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 7.5L12 3.5l4 4M5 12.5V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5.5"/></svg>';
   function setPitch(name, lead, tiles, more, note){
@@ -2135,10 +2127,7 @@ var PLANS = (function(){
       '<button type="button" class="share" id="share-btn">' + SHARE_ICON + 'Share</button></div>' +
       '<p class="lead">' + lead + '</p>' + tilesHtml(tiles) +
       (more ? '<p class="also more"><b>There is more for you:</b> ' + more + '</p>' : '') +
-      '<p class="also"><b>Please note:</b> ' + note + '</p>' +
-      '<details class="pmore"><summary>What each point means</summary><dl>' +
-        tiles.map(function(t){ return '<dt>' + esc(t[1]) + '</dt><dd>' + esc(t[2]) + '</dd>'; }).join('') + '</dl>' +
-        (more ? '<p><b>There is more for you:</b> ' + more + '</p>' : '') + '</details>';
+      '<p class="also"><b>Please note:</b> ' + note + '</p>';
   }
 
   // Share image: the pitch drawn on a canvas as a 1080px-wide picture, so it can go out on WhatsApp without the app around it.
@@ -2158,7 +2147,7 @@ var PLANS = (function(){
   function drawPitch(d){
     var css = getComputedStyle(document.documentElement), col = function(k){ return css.getPropertyValue(k).trim(); };
     var FAM = getComputedStyle(document.body).fontFamily;
-    var W = 1080, P = 64, IN = W - 2*P, GAP = 20;
+    var W = 1080, P = 60, IN = W - 2*P, GAP = 14;
     var cv = document.createElement('canvas'), x = cv.getContext('2d');
     function font(w, s){ x.font = w + ' ' + s + 'px ' + FAM; }
     function lay(tokens, size, maxW, wOf){
@@ -2176,14 +2165,19 @@ var PLANS = (function(){
 
     var head = lay(words('What ' + d.name + ' does for you'), 64, IN, function(){ return 800; });
     var lead = lay(richTokens(d.lead), 37, IN, function(k){ return k.b ? 800 : 500; });
-    var tw = (IN - GAP)/2, tin = tw - 60;
-    var tiles = d.tiles.map(function(t){ return {fig:t[0], size:fit(t[0], 800, 62, tin, 34), title:lay(words(t[1]), 29, tin, function(){ return 700; })}; });
-    var rows = []; for (var i=0;i<tiles.length;i+=2) rows.push(tiles.slice(i, i+2));
-    var rowH = rows.map(function(r){ return 30 + 70 + 14 + Math.max.apply(null, r.map(function(t){ return t.title.length; }))*38 + 26; });
+    // One tile per row: figure and title share a line, the explanation runs full width beneath.
+    var TP = 30, tin = IN - 2*TP;
+    var tiles = d.tiles.map(function(t){
+      var size = fit(t[0], 800, 46, 340, 30); font(800, size);
+      var fw = x.measureText(t[0]).width;
+      var title = lay(words(t[1]), 31, tin - fw - 20, function(){ return 700; });
+      var text = lay(words(t[2]), 27, tin, function(){ return 500; });
+      return {fig:t[0], size:size, fw:fw, title:title, text:text, h:26 + title.length*42 + 10 + text.length*38 + 24};
+    });
     var box = document.createElement('div'); box.innerHTML = d.note;
     var note = lay([{t:'Please', b:true, sp:false}, {t:'note:', b:true, sp:true}].concat(words(box.textContent).map(function(k){ k.sp = true; return k; })), 23, IN, function(k){ return k.b ? 700 : 500; });
 
-    var H = P + 34 + 30 + head.length*72 + 26 + lead.length*54 + 34 + rowH.reduce(function(a, b){ return a + b + GAP; }, 0) + 16 + note.length*34 + 30 + 28 + P - 14;
+    var H = P + 34 + 30 + head.length*72 + 26 + lead.length*54 + 34 + tiles.reduce(function(a, t){ return a + t.h + GAP; }, 0) + 16 + note.length*34 + 30 + 28 + P - 14;
     cv.width = W; cv.height = Math.ceil(H);
     x.fillStyle = col('--band'); x.fillRect(0, 0, W, cv.height);
     x.textBaseline = 'alphabetic';
@@ -2201,15 +2195,15 @@ var PLANS = (function(){
     y += 26;
     put(lead, 37, 54, function(k){ return k.b ? 800 : 500; }, function(k){ return k.b ? col('--band-hi') : col('--band-ink'); });
     y += 34;
-    rows.forEach(function(r, ri){
-      r.forEach(function(t, ci){
-        var tx = P + ci*(tw + GAP);
-        x.fillStyle = 'rgba(255,255,255,.07)';
-        if (x.roundRect){ x.beginPath(); x.roundRect(tx, y, tw, rowH[ri], 30); x.fill(); } else x.fillRect(tx, y, tw, rowH[ri]);
-        font(800, t.size); x.fillStyle = col('--band-hi'); x.fillText(t.fig, tx + 30, y + 30 + 56);
-        t.title.forEach(function(L, li){ L.forEach(function(o){ font(700, 29); x.fillStyle = col('--band-ink'); x.fillText(o.k.t, tx + 30 + o.x, y + 30 + 70 + 14 + (li+1)*38 - 9); }); });
-      });
-      y += rowH[ri] + GAP;
+    tiles.forEach(function(t){
+      x.fillStyle = 'rgba(255,255,255,.07)';
+      if (x.roundRect){ x.beginPath(); x.roundRect(P, y, IN, t.h, 28); x.fill(); } else x.fillRect(P, y, IN, t.h);
+      var base = y + 26 + 33;
+      font(800, t.size); x.fillStyle = col('--band-hi'); x.fillText(t.fig, P + TP, base);
+      t.title.forEach(function(L, li){ L.forEach(function(o){ font(700, 31); x.fillStyle = col('--band-ink'); x.fillText(o.k.t, P + TP + t.fw + 20 + o.x, base + li*42); }); });
+      var ty = y + 26 + t.title.length*42 + 10;
+      t.text.forEach(function(L, li){ L.forEach(function(o){ font(500, 27); x.fillStyle = col('--band-mute'); x.fillText(o.k.t, P + TP + o.x, ty + (li+1)*38 - 10); }); });
+      y += t.h + GAP;
     });
     y += 16;
     put(note, 23, 34, function(k){ return k.b ? 700 : 500; }, function(k){ return k.b ? col('--band-ink') : col('--band-mute'); });
