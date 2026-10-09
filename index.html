@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Working tool: customer pitch, key terms and return calculators for SBI Life individual plans. Not an official SBI Life illustration.">
-<meta name="theme-color" content="#F4F6F1" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0A0F0C" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F4F6F1">
+<meta name="color-scheme" content="light only">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -29,7 +29,8 @@ img{max-width:100%}
 <style>
 /* Layout: inputs in a left rail, results to the right; one column on phones.
    Look: flat and quiet. White surfaces on a soft sage canvas, hairline borders, no shadows, pill controls, one typeface.
-   One deep-pine band for the pitch. Lime is reserved for the selected plan, key figures and the primary button. */
+   One deep-pine band for the pitch. Lime is reserved for the selected plan, key figures and the primary button.
+   Light only, at the owner's request: the dark version read as gloomy on phones. */
 :root{
   --bg:#F4F6F1; --surface:#FFFFFF; --sunk:#F3F5F0; --ink:#0F1A14; --muted:#5E6B63; --line:#E2E7DE;
   --accent:#0A7A45; --accent-ink:#FFFFFF;
@@ -37,24 +38,9 @@ img{max-width:100%}
   --lo:#2F6BDE; --hi:#0A8A4E; --past:#7A4CD9; --x:#B56A00;
   --band:#0C3B2A; --band-ink:#F3F8F2; --band-mute:#B5C9BC; --band-tile:rgba(255,255,255,.07); --band-hi:#C2F36B;
   --ok:#0A6B3D; --bad:#D03A2F; --warn:#8A5A00; --ok-bg:#E6F6E4; --bad-bg:#FDECEA; --warn-bg:#FFF4D6;
+  color-scheme:light;
   --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0A0F0C; --surface:#121915; --sunk:#0D130F; --ink:#ECF2ED; --muted:#96A39B; --line:#252F29;
-  --accent:#B9EE66; --accent-ink:#0C2A1D;
-  --lime:#C2F36B; --lime-ink:#0C3B2A; --sel:#ECF2ED; --sel-ink:#0A0F0C;
-  --lo:#7FA8FF; --hi:#5FDB95; --past:#B79BFF; --x:#F2B95C;
-  --band:#10382A; --band-ink:#F3F8F2; --band-mute:#AFC6B7; --band-tile:rgba(255,255,255,.06); --band-hi:#C2F36B;
-  --ok:#7FE0A4; --bad:#FF8F85; --warn:#F0C262; --ok-bg:#10281B; --bad-bg:#3A1714; --warn-bg:#33280E;
-  color-scheme:dark } }
-:root[data-theme="dark"]{
-  --bg:#0A0F0C; --surface:#121915; --sunk:#0D130F; --ink:#ECF2ED; --muted:#96A39B; --line:#252F29;
-  --accent:#B9EE66; --accent-ink:#0C2A1D;
-  --lime:#C2F36B; --lime-ink:#0C3B2A; --sel:#ECF2ED; --sel-ink:#0A0F0C;
-  --lo:#7FA8FF; --hi:#5FDB95; --past:#B79BFF; --x:#F2B95C;
-  --band:#10382A; --band-ink:#F3F8F2; --band-mute:#AFC6B7; --band-tile:rgba(255,255,255,.06); --band-hi:#C2F36B;
-  --ok:#7FE0A4; --bad:#FF8F85; --warn:#F0C262; --ok-bg:#10281B; --bad-bg:#3A1714; --warn-bg:#33280E;
-  color-scheme:dark }
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
@@ -218,68 +204,119 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
 #nocalc .btn{display:inline-block;background:var(--lime);border-color:var(--lime);color:var(--lime-ink);font-size:14px;font-weight:700;padding:11px 20px;text-decoration:none}
 #nocalc .btn:hover{filter:brightness(.96)}
 
-@media (max-width:560px){
-  .wrap{gap:18px;padding-block:20px 40px}
-  .stack{gap:18px}
-  .pgrid{grid-template-columns:minmax(0,1fr)}
-  .pitch{padding:24px 18px;border-radius:24px;gap:16px}
-  .pitch .lead{font-size:16px}
-  .ptile{border-radius:18px;padding:16px 18px}
-  .panel{padding:18px;border-radius:20px}
-  .card{padding:18px;border-radius:20px}
-}
 @media (max-width:520px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
-/* Phones: one section at a time, switched from a bottom bar, so nothing needs a long scroll. */
+/* Phones: one section at a time, switched from a bottom bar, with a tighter type scale and compact cards. */
 [hidden]{display:none!important}
 .dock,.ptile .n{display:none}
 @media (max-width:700px){
-  .wrap{gap:14px;padding-block:14px calc(96px + env(safe-area-inset-bottom,0px))}
-  .wrap[data-tab=inputs]{padding-bottom:calc(150px + env(safe-area-inset-bottom,0px))}
+  body{font-size:14px}
+  .wrap{gap:12px;padding-block:12px calc(84px + env(safe-area-inset-bottom,0px))}
+  .wrap[data-tab=inputs]{padding-bottom:calc(132px + env(safe-area-inset-bottom,0px))}
   .wrap[data-tab=pitch] [data-view]:not([data-view~=pitch]),
   .wrap[data-tab=plan] [data-view]:not([data-view~=plan]),
   .wrap[data-tab=inputs] [data-view]:not([data-view~=inputs]),
   .wrap[data-tab=results] [data-view]:not([data-view~=results]){display:none!important}
-  .stack{gap:14px}
+  .stack,.results{gap:12px}
   header.top .meta{display:none}
-  .brand{gap:10px}
-  .mark{width:36px;height:36px;border-radius:12px}
-  h1{font-size:21px}
-  .picker{gap:8px}
-  #cats,.plist{flex-wrap:nowrap;overflow-x:auto;position:relative;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
+  .brand{gap:9px}
+  .mark{width:30px;height:30px;border-radius:10px}
+  h1{font-size:18px}
+  h2,details.ref>summary{font-size:16px}
+  .small{font-size:12px}
+  .picker{gap:7px}
+  #cats,.plist{flex-wrap:nowrap;gap:6px;overflow-x:auto;position:relative;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
   #cats::-webkit-scrollbar,.plist::-webkit-scrollbar,.pgrid::-webkit-scrollbar{display:none}
   #cats button,.plist button{flex:none;white-space:nowrap}
-  #cats button{padding:9px 15px}
-  .plist button{padding:10px 16px}
-  .ptag{font-size:12.5px}
-  .pitch{padding:22px 18px;border-radius:24px;gap:14px}
-  .pitch h2{font-size:22px}
-  .pitch .lead{font-size:16px;line-height:1.5}
-  .pgrid{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-18px;padding-inline:18px;scroll-padding-inline:18px;scrollbar-width:none}
-  .ptile{flex:0 0 82%;scroll-snap-align:start;position:relative;border-radius:18px;padding:16px 18px}
-  .ptile .n{display:block;position:absolute;top:16px;right:18px;font-size:12px;font-weight:700;color:var(--band-mute)}
-  .pitch .also{font-size:13px}
-  .panel{padding:18px;border-radius:20px}
-  .card{padding:18px;border-radius:20px}
-  input[type=number],select{font-size:16px;padding:11px 12px}
-  .fundrow select{font-size:15px}
-  .seg label{padding:10px 6px;font-size:14px}
-  .btn{padding:9px 15px;font-size:14px}
-  .glance>div{grid-template-columns:118px minmax(0,1fr)}
+  .tabs button{padding:6px 12px;font-size:12.5px}
+  .plist button{padding:7px 13px;font-size:13px}
+  .ptag{font-size:12px;line-height:1.4}
+
+  .pitch{padding:16px;border-radius:20px;gap:12px}
+  .pitch h2{font-size:18px}
+  .pitch .lead{font-size:14.5px;line-height:1.5}
+  .pgrid{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;scrollbar-width:none}
+  .ptile{flex:0 0 74%;scroll-snap-align:start;position:relative;border-radius:14px;padding:12px 14px;gap:4px}
+  .ptile .fig{font-size:24px}
+  .ptile h3{font-size:14px}
+  .ptile p{font-size:12.5px;line-height:1.45}
+  .ptile .n{display:block;position:absolute;top:12px;right:14px;font-size:11px;font-weight:700;color:var(--band-mute)}
+  .pitch .also{font-size:12.5px;line-height:1.5}
+
+  .panel{padding:14px;border-radius:16px;gap:12px}
+  .glance>div{grid-template-columns:104px minmax(0,1fr);gap:10px;padding:8px 0;font-size:13px}
+  .docs ul{font-size:13px}
   .docs ul.cols{grid-template-columns:minmax(0,1fr)}
+  .notes{font-size:12.5px}
+  .risk{font-size:11.5px}
+
+  .field{gap:4px}
+  .field label,.field .lab{font-size:12.5px}
+  .field .hint{font-size:11.5px}
+  /* 16px stops iPhones zooming the page when a field is tapped */
+  input[type=number],select{font-size:16px;font-weight:500;padding:8px 10px;border-radius:10px}
+  .fundrow select{font-size:14.5px}
+  .seg{border-radius:12px;padding:3px}
+  .seg label{padding:8px 6px;font-size:13px;border-radius:9px}
+  .btn{padding:7px 13px;font-size:13px}
+  .check,.presets span{font-size:12.5px}
+
+  .status{padding:10px 14px;font-size:13px;border-radius:14px}
+  .scen{gap:8px}
+  .card{padding:14px;border-radius:16px;gap:3px}
+  .card .tag{font-size:10.5px;padding:3px 9px}
+  .card .big{font-size:24px;margin-top:6px}
+  .card .sub{font-size:12px}
+  .recon{font-size:11.5px}
+  .card dl{font-size:12.5px;gap:3px 12px;margin-top:8px;padding-top:9px}
+  .facts{border-radius:16px}
+  .facts div{padding:9px 12px}
+  .facts span{font-size:11.5px}
+  .facts b{font-size:13.5px}
+
+  /* tables: sized to fit the screen where they can, first column pinned where they cannot */
+  .scroll{border-radius:12px}
+  table{font-size:12px}
+  th,td{padding:7px 8px}
+  thead th{font-size:11px}
+  #bridge td:first-child{white-space:normal}
+  #yearly{font-size:11.5px}
+  #yearly th,#yearly td{padding:6px 7px}
+  #yearly thead th{white-space:normal;min-width:64px;vertical-align:bottom;line-height:1.25}
+  #yearly thead th:first-child{min-width:0}
+  #yearly th:first-child,#yearly td:first-child{position:sticky;left:0;z-index:1;background:var(--surface);box-shadow:1px 0 0 var(--line)}
+  #yearly thead th:first-child,#yearly tfoot td:first-child{background:var(--sunk)}
+  #yearly[data-v=summary] th:nth-child(2),#yearly[data-v=summary] td:nth-child(2),
+  #yearly[data-v=summary] th:nth-child(3),#yearly[data-v=summary] td:nth-child(3){display:none}
+  .la{font-size:10px;padding:0 6px;margin-left:4px}
+  #perf,#perf thead,#perf tbody,#perf tfoot{display:block}
+  #perf tr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(0,1.2fr) minmax(0,1.35fr);align-items:end;padding-inline:6px}
+  #perf thead th:first-child{display:none}
+  #perf thead th{position:static;white-space:normal;font-size:10.5px;line-height:1.2;padding:8px 4px;border-bottom:0}
+  #perf thead tr{background:var(--sunk);border-bottom:1px solid var(--line)}
+  #perf td{padding:3px 4px 9px;font-size:12.5px;border-bottom:0;text-align:right}
+  #perf td.fund,#perf tfoot td:first-child{grid-column:1/-1;padding:9px 4px 2px;text-align:left;min-width:0;font-size:13px}
+  #perf td.fund small{font-size:11px}
+  #perf tbody tr{border-bottom:1px solid var(--line)}
+  #perf tbody tr:last-child{border-bottom:0}
+  #perf tfoot tr{background:var(--sunk);border-top:1px solid var(--line)}
+  #perf tfoot td{background:none;border-top:0}
+  button.ret{font-size:12.5px}
+
   .dock{display:block;position:fixed;inset:auto 0 0 0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
   .bnav{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
-  .bnav button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 9px;border:0;background:none;color:var(--muted);font-size:11.5px;font-weight:600}
-  .bnav .ic{display:grid;place-items:center;width:56px;height:30px;border-radius:999px}
-  .bnav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .bnav button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px 7px;border:0;background:none;color:var(--muted);font-size:11px;font-weight:600}
+  .bnav button:focus-visible{outline-offset:-3px}
+  .bnav .ic{display:grid;place-items:center;width:48px;height:26px;border-radius:999px}
+  .bnav svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
   .bnav button[aria-pressed=true]{color:var(--ink);font-weight:700}
   .bnav button[aria-pressed=true] .ic{background:var(--lime);color:var(--lime-ink)}
-  .mini{display:none;width:100%;align-items:center;gap:16px;padding:10px 16px;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left}
+  .mini{display:none;width:100%;align-items:center;gap:16px;padding:7px 16px;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left}
   .wrap[data-tab=inputs] .mini{display:flex}
   .mini span{display:flex;flex-direction:column;line-height:1.2;min-width:0}
-  .mini i{font-style:normal;font-size:11.5px;font-weight:700;color:var(--c)}
-  .mini b{font-size:16px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
-  .mini em{margin-left:auto;flex:none;font-style:normal;font-size:13px;font-weight:700;color:var(--lime-ink);background:var(--lime);border-radius:999px;padding:7px 14px}
-  .mini.bad b{font-size:13.5px;font-weight:700;letter-spacing:0;color:var(--bad);white-space:normal}
+  .mini i{font-style:normal;font-size:10.5px;font-weight:700;color:var(--c)}
+  .mini b{font-size:14.5px;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+  .mini em{margin-left:auto;flex:none;font-style:normal;font-size:12.5px;font-weight:700;color:var(--lime-ink);background:var(--lime);border-radius:999px;padding:6px 13px}
+  .mini.bad b{font-size:12.5px;font-weight:700;letter-spacing:0;color:var(--bad);white-space:normal}
 }
 </style>
 </head>
@@ -2037,6 +2074,7 @@ var PLANS = (function(){
         (hasAdds ? '<td>' + plain(R.tot.loyalty) + '</td>' : '') + (p.staff ? '<td>' + plain(R.tot.extra) + '</td>' : '') + '<td>' + plain(R.maturity) + '</td></tr></tfoot>';
     }
     $('yearly').innerHTML = t;
+    $('yearly').setAttribute('data-v', view==='summary' ? 'summary' : 'charges');
     $('yearly-note').textContent = pension
       ? 'Values are at each policy year end. Death benefit is the higher of fund value with terminal addition, or 105% of premiums paid.'
       : cfg.child ? 'Values are at each policy year end. The lump sum on the parent\'s death is the higher of the sum assured or 105% of premiums paid; the fund then continues to maturity with premiums paid by SBI Life.'
