@@ -1,6 +1,6 @@
 /* Plan Desk service worker: makes the app open without a connection.
    Bump VERSION whenever you upload changed files, so phones drop the old copy. */
-const VERSION = 'plan-desk-v10';
+const VERSION = 'plan-desk-v11';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', (event) => {
