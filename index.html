@@ -2233,6 +2233,9 @@ var PLANS = (function(){
         try { shareFile = new File([blob], name, {type:'image/png'}); } catch (e) { shareFile = null; }
         $('sheet-img').src = shareUrl;
         $('sheet-save').href = shareUrl; $('sheet-save').setAttribute('download', name);
+        // Inside an embedding page (the claude.ai viewer) file saves are blocked, so offer only press-and-hold there.
+        var framed = false; try { framed = window.self!==window.top; } catch (e) { framed = true; }
+        $('sheet-save').hidden = framed;
         $('sheet-send').hidden = !(shareFile && navigator.canShare && navigator.canShare({files:[shareFile]}));
         $('sheet').hidden = false;
       }, 'image/png');
