@@ -90,6 +90,21 @@ header.top .meta{font-size:13px;line-height:1.45;color:var(--muted);max-width:92
 .pitch .also{font-size:13.5px;line-height:1.55;color:var(--band-mute);max-width:95ch}
 .pitch .also b{color:var(--band-ink);font-weight:700}
 
+/* pitch header, share button, share sheet */
+.phead{display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.share{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--lime-ink);background:var(--lime);border:0;border-radius:999px;padding:8px 15px}
+.share:hover{filter:brightness(.96)}
+.share svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pitch .share:focus-visible{outline-color:var(--band-hi)}
+.pmore{display:none}
+.sheet{position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:16px;background:rgba(8,16,12,.9)}
+.sheet img{display:block;max-width:min(100%,420px);max-height:calc(100dvh - 150px);border-radius:18px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.sheet .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.sheet .acts>*{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:999px;padding:10px 18px;text-decoration:none;cursor:pointer}
+.sheet .go{background:var(--lime);color:var(--lime-ink)}
+.sheet .alt{background:#FFFFFF;color:#0F1A14}
+.sheet p{color:#DCE6DF;font-size:12.5px;text-align:center;max-width:36ch}
+
 /* panels */
 #glance-links{display:flex;flex-wrap:wrap;gap:6px 18px}
 .grid{display:grid;grid-template-columns:minmax(0,370px) minmax(0,1fr);gap:24px;align-items:start}
@@ -207,7 +222,7 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
 @media (max-width:520px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Phones: one section at a time, switched from a bottom bar, with a tighter type scale and compact cards. */
 [hidden]{display:none!important}
-.dock,.ptile .n{display:none}
+.dock{display:none}
 @media (max-width:700px){
   body{font-size:14px}
   .wrap{gap:12px;padding-block:12px calc(84px + env(safe-area-inset-bottom,0px))}
@@ -225,7 +240,7 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
   .small{font-size:12px}
   .picker{gap:7px}
   #cats,.plist{flex-wrap:nowrap;gap:6px;overflow-x:auto;position:relative;margin-inline:-16px;padding-inline:16px;scrollbar-width:none}
-  #cats::-webkit-scrollbar,.plist::-webkit-scrollbar,.pgrid::-webkit-scrollbar{display:none}
+  #cats::-webkit-scrollbar,.plist::-webkit-scrollbar{display:none}
   #cats button,.plist button{flex:none;white-space:nowrap}
   .tabs button{padding:6px 12px;font-size:12.5px}
   .plist button{padding:7px 13px;font-size:13px}
@@ -234,13 +249,23 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
   .pitch{padding:16px;border-radius:20px;gap:12px}
   .pitch h2{font-size:18px}
   .pitch .lead{font-size:14.5px;line-height:1.5}
-  .pgrid{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-16px;padding-inline:16px;scroll-padding-inline:16px;scrollbar-width:none}
-  .ptile{flex:0 0 74%;scroll-snap-align:start;position:relative;border-radius:14px;padding:12px 14px;gap:4px}
-  .ptile .fig{font-size:24px}
-  .ptile h3{font-size:14px}
-  .ptile p{font-size:12.5px;line-height:1.45}
-  .ptile .n{display:block;position:absolute;top:12px;right:14px;font-size:11px;font-weight:700;color:var(--band-mute)}
-  .pitch .also{font-size:12.5px;line-height:1.5}
+  .pitch h2{font-size:18px}
+  .share{font-size:12.5px;padding:6px 12px}
+  .share svg{width:15px;height:15px}
+  /* poster: all six points on one screen, figure and title only */
+  .pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .ptile{border-radius:14px;padding:11px 12px;gap:3px}
+  .ptile .fig{font-size:22px}
+  .ptile h3{font-size:12.5px;line-height:1.3}
+  .ptile p,.pitch .also.more{display:none}
+  .pmore{display:block;font-size:12.5px;line-height:1.5;color:var(--band-mute)}
+  .pmore summary{cursor:pointer;font-weight:700;color:var(--band-ink)}
+  .pmore dl{margin:8px 0 0;display:flex;flex-direction:column;gap:2px}
+  .pmore dt{font-weight:700;color:var(--band-ink);margin-top:6px}
+  .pmore dd{margin:0}
+  .pmore p{margin-top:10px}
+  .pmore p b{color:var(--band-ink)}
+  .pitch .also{font-size:11.5px;line-height:1.45}
 
   .panel{padding:14px;border-radius:16px;gap:12px}
   .glance>div{grid-template-columns:104px minmax(0,1fr);gap:10px;padding:8px 0;font-size:13px}
@@ -620,6 +645,15 @@ details.ref>summary{cursor:pointer;font-weight:700;font-size:19px;letter-spacing
     <p class="small">Plan details were read from SBI Life's sales brochures and product pages on 8 and 9 October 2026. Each plan's "at a glance" names its source. Products, rates and terms change, so check the current brochure before quoting, and give the customer SBI Life's policy-specific benefit illustration before the sale.</p>
     <p class="risk">This page is an independent working aid. It is not issued or endorsed by SBI Life Insurance Company Limited. Insurance is the subject matter of solicitation.</p>
   </section>
+  <div class="sheet" id="sheet" role="dialog" aria-label="Pitch image" hidden>
+    <img id="sheet-img" alt="Pitch image for this plan">
+    <div class="acts">
+      <button type="button" class="go" id="sheet-send">Share</button>
+      <a class="alt" id="sheet-save" href="#">Save image</a>
+      <button type="button" class="alt" id="sheet-close">Close</button>
+    </div>
+    <p>You can also press and hold the picture to share or save it.</p>
+  </div>
   <div class="dock">
     <button type="button" class="mini" id="mini" aria-label="See results"></button>
     <nav class="bnav" id="bnav" aria-label="Sections">
@@ -2088,7 +2122,127 @@ var PLANS = (function(){
       : p.plan==='limited' ? 'You invest ' + short(p.premium) + ' a year for ' + p.ppt + ' years and stay invested for ' + p.pt + '.'
       : 'You invest ' + short(p.premium) + ' a year for ' + p.pt + ' years.';
   }
-  function tilesHtml(tiles){ return '<div class="pgrid">' + tiles.map(function(t, i){ return '<div class="ptile"><span class="n">' + (i+1) + ' / ' + tiles.length + '</span><div class="fig">' + esc(t[0]) + '</div><h3>' + esc(t[1]) + '</h3><p>' + esc(t[2]) + '</p></div>'; }).join('') + '</div>'; }
+  function tilesHtml(tiles){ return '<div class="pgrid">' + tiles.map(function(t){ return '<div class="ptile"><div class="fig">' + esc(t[0]) + '</div><h3>' + esc(t[1]) + '</h3><p>' + esc(t[2]) + '</p></div>'; }).join('') + '</div>'; }
+
+  // One place builds the pitch. lead, more and note are HTML-safe strings; tiles are [figure, title, text].
+  // On phones the tiles show figure and title only, so the whole pitch fits one screen; the texts sit in a fold below.
+  var pitchData = null;
+  var SHARE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M8 7.5L12 3.5l4 4M5 12.5V18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5.5"/></svg>';
+  function setPitch(name, lead, tiles, more, note){
+    var pl = planById(current);
+    pitchData = {name:name, uin:pl.uin, lead:lead, tiles:tiles, note:note};
+    $('pitch').innerHTML = '<div class="phead"><h2>What ' + esc(name) + ' does for you</h2>' +
+      '<button type="button" class="share" id="share-btn">' + SHARE_ICON + 'Share</button></div>' +
+      '<p class="lead">' + lead + '</p>' + tilesHtml(tiles) +
+      (more ? '<p class="also more"><b>There is more for you:</b> ' + more + '</p>' : '') +
+      '<p class="also"><b>Please note:</b> ' + note + '</p>' +
+      '<details class="pmore"><summary>What each point means</summary><dl>' +
+        tiles.map(function(t){ return '<dt>' + esc(t[1]) + '</dt><dd>' + esc(t[2]) + '</dd>'; }).join('') + '</dl>' +
+        (more ? '<p><b>There is more for you:</b> ' + more + '</p>' : '') + '</details>';
+  }
+
+  // Share image: the pitch drawn on a canvas as a 1080px-wide picture, so it can go out on WhatsApp without the app around it.
+  function richTokens(html){
+    var box = document.createElement('div'), out = [];
+    box.innerHTML = html;
+    [].forEach.call(box.childNodes, function(n){
+      var bold = n.nodeType===1, txt = n.textContent;
+      if (bold){ out.push({t:txt.trim(), b:true, sp:/^\s/.test(txt) || (out.length && out[out.length-1].trail)}); out[out.length-1].trail = /\s$/.test(txt); return; }
+      var lead = /^\s/.test(txt), parts = txt.split(/\s+/).filter(function(w){ return w; });
+      parts.forEach(function(w, i){ out.push({t:w, b:false, sp: i>0 || lead || (out.length>0 && out[out.length-1].trail===true)}); });
+      if (parts.length) out[out.length-1].trail = /\s$/.test(txt);
+    });
+    if (out.length) out[0].sp = false;
+    return out;
+  }
+  function drawPitch(d){
+    var css = getComputedStyle(document.documentElement), col = function(k){ return css.getPropertyValue(k).trim(); };
+    var FAM = getComputedStyle(document.body).fontFamily;
+    var W = 1080, P = 64, IN = W - 2*P, GAP = 20;
+    var cv = document.createElement('canvas'), x = cv.getContext('2d');
+    function font(w, s){ x.font = w + ' ' + s + 'px ' + FAM; }
+    function lay(tokens, size, maxW, wOf){
+      var lines = [[]], cur = 0;
+      tokens.forEach(function(k){
+        font(wOf(k), size);
+        var sw = k.sp ? x.measureText(' ').width : 0, tw = x.measureText(k.t).width;
+        if (lines[lines.length-1].length && cur + sw + tw > maxW){ lines.push([]); cur = 0; sw = 0; }
+        lines[lines.length-1].push({k:k, x:cur + sw, w:tw}); cur += sw + tw;
+      });
+      return lines;
+    }
+    function words(s, bold){ return String(s).split(/\s+/).filter(function(w){ return w; }).map(function(w, i){ return {t:w, b:!!bold, sp:i>0}; }); }
+    function fit(text, weight, size, maxW, min){ font(weight, size); while (size>min && x.measureText(text).width>maxW){ size -= 2; font(weight, size); } return size; }
+
+    var head = lay(words('What ' + d.name + ' does for you'), 64, IN, function(){ return 800; });
+    var lead = lay(richTokens(d.lead), 37, IN, function(k){ return k.b ? 800 : 500; });
+    var tw = (IN - GAP)/2, tin = tw - 60;
+    var tiles = d.tiles.map(function(t){ return {fig:t[0], size:fit(t[0], 800, 62, tin, 34), title:lay(words(t[1]), 29, tin, function(){ return 700; })}; });
+    var rows = []; for (var i=0;i<tiles.length;i+=2) rows.push(tiles.slice(i, i+2));
+    var rowH = rows.map(function(r){ return 30 + 70 + 14 + Math.max.apply(null, r.map(function(t){ return t.title.length; }))*38 + 26; });
+    var box = document.createElement('div'); box.innerHTML = d.note;
+    var note = lay([{t:'Please', b:true, sp:false}, {t:'note:', b:true, sp:true}].concat(words(box.textContent).map(function(k){ k.sp = true; return k; })), 23, IN, function(k){ return k.b ? 700 : 500; });
+
+    var H = P + 34 + 30 + head.length*72 + 26 + lead.length*54 + 34 + rowH.reduce(function(a, b){ return a + b + GAP; }, 0) + 16 + note.length*34 + 30 + 28 + P - 14;
+    cv.width = W; cv.height = Math.ceil(H);
+    x.fillStyle = col('--band'); x.fillRect(0, 0, W, cv.height);
+    x.textBaseline = 'alphabetic';
+    var y = P;
+    function put(lines, size, lh, wOf, cOf){
+      lines.forEach(function(L){ y += lh; L.forEach(function(o){ font(wOf(o.k), size); x.fillStyle = cOf(o.k); x.fillText(o.k.t, P + o.x, y - lh*0.24); }); });
+    }
+    font(700, 24); x.fillStyle = col('--band-hi');
+    var tag = ('SBI Life – ' + d.name + '  ·  UIN ' + d.uin).toUpperCase();
+    try { x.letterSpacing = '1.5px'; } catch (e) {}
+    font(700, fit(tag, 700, 24, IN, 16)); x.fillText(tag, P, y + 26);
+    try { x.letterSpacing = '0px'; } catch (e) {}
+    y += 34 + 30;
+    put(head, 64, 72, function(){ return 800; }, function(){ return col('--band-ink'); });
+    y += 26;
+    put(lead, 37, 54, function(k){ return k.b ? 800 : 500; }, function(k){ return k.b ? col('--band-hi') : col('--band-ink'); });
+    y += 34;
+    rows.forEach(function(r, ri){
+      r.forEach(function(t, ci){
+        var tx = P + ci*(tw + GAP);
+        x.fillStyle = 'rgba(255,255,255,.07)';
+        if (x.roundRect){ x.beginPath(); x.roundRect(tx, y, tw, rowH[ri], 30); x.fill(); } else x.fillRect(tx, y, tw, rowH[ri]);
+        font(800, t.size); x.fillStyle = col('--band-hi'); x.fillText(t.fig, tx + 30, y + 30 + 56);
+        t.title.forEach(function(L, li){ L.forEach(function(o){ font(700, 29); x.fillStyle = col('--band-ink'); x.fillText(o.k.t, tx + 30 + o.x, y + 30 + 70 + 14 + (li+1)*38 - 9); }); });
+      });
+      y += rowH[ri] + GAP;
+    });
+    y += 16;
+    put(note, 23, 34, function(k){ return k.b ? 700 : 500; }, function(k){ return k.b ? col('--band-ink') : col('--band-mute'); });
+    y += 30;
+    font(500, 21); x.fillStyle = col('--band-mute');
+    x.fillText('Prepared ' + new Date().toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'}), P, y + 20);
+    return cv;
+  }
+  var shareUrl = null, shareFile = null;
+  function openShare(){
+    if (!pitchData) return;
+    var d = pitchData, fam = getComputedStyle(document.body).fontFamily.split(',')[0];
+    var ready = document.fonts && document.fonts.load ? Promise.all(['800 64px ', '700 29px ', '500 37px '].map(function(f){ return document.fonts.load(f + fam, '₹A'); })).catch(function(){}) : Promise.resolve();
+    ready.then(function(){
+      var cv = drawPitch(d);
+      cv.toBlob(function(blob){
+        if (!blob) return;
+        var name = d.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-pitch.png';
+        if (shareUrl) URL.revokeObjectURL(shareUrl);
+        shareUrl = URL.createObjectURL(blob);
+        try { shareFile = new File([blob], name, {type:'image/png'}); } catch (e) { shareFile = null; }
+        $('sheet-img').src = shareUrl;
+        $('sheet-save').href = shareUrl; $('sheet-save').setAttribute('download', name);
+        $('sheet-send').hidden = !(shareFile && navigator.canShare && navigator.canShare({files:[shareFile]}));
+        $('sheet').hidden = false;
+      }, 'image/png');
+    });
+  }
+  $('pitch').addEventListener('click', function(e){ if (e.target.closest && e.target.closest('#share-btn')) openShare(); });
+  $('sheet-send').addEventListener('click', function(){
+    if (shareFile) navigator.share({files:[shareFile], title:pitchData.name}).catch(function(){});
+  });
+  $('sheet').addEventListener('click', function(e){ if (e.target===$('sheet') || (e.target.closest && e.target.closest('#sheet-close'))) $('sheet').hidden = true; });
 
   function renderPitch(p, r4, r8){
     var single = p.plan==='single', LA = {6:1, 10:2.5, 15:3.5, 20:5, 25:6, 30:7};
@@ -2110,11 +2264,11 @@ var PLANS = (function(){
     tiles.push(single
       ? ['2–5 yrs', 'Your family can take it as income', 'Your nominee can choose to receive the death benefit in instalments spread over 2 to 5 years instead of one lump sum.']
       : ['₹100', 'A small flat fee, however much you invest', 'Running the policy costs ₹100 a month at present, whether your premium is ₹6 lakh or ₹60 lakh. There is no GST on your premium.']);
-    $('pitch').innerHTML = '<h2>What Smart Privilege Plus does for you</h2>' +
-      '<p class="lead">' + payLine(p) + ' At an assumed return of 4% a year your fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. Your family is covered for <b>' + short(r4.sa) + '</b> from the first day.</p>' +
-      tilesHtml(tiles) +
-      '<p class="also"><b>There is more for you:</b> ' + (single ? 'there is no GST on your premium. ' : 'your nominee can choose to receive the death benefit in instalments over 2 to 5 years. ') + 'You can add accident death cover of up to 3 times your sum assured (maximum ₹2 crore).</p>' +
-      '<p class="also"><b>Please note:</b> this is a market-linked plan, so returns are not guaranteed and the investment risk is yours. 4% and 8% are assumed rates used for illustration, not minimum or maximum returns. You cannot withdraw or surrender for payout during the first 5 years. Ask for your policy-specific benefit illustration before you decide.</p>';
+    setPitch('Smart Privilege Plus',
+      payLine(p) + ' At an assumed return of 4% a year your fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. Your family is covered for <b>' + short(r4.sa) + '</b> from the first day.',
+      tiles,
+      (single ? 'there is no GST on your premium. ' : 'your nominee can choose to receive the death benefit in instalments over 2 to 5 years. ') + 'You can add accident death cover of up to 3 times your sum assured (maximum ₹2 crore).',
+      'this is a market-linked plan, so returns are not guaranteed and the investment risk is yours. 4% and 8% are assumed rates used for illustration, not minimum or maximum returns. You cannot withdraw or surrender for payout during the first 5 years. Ask for your policy-specific benefit illustration before you decide.');
   }
 
   // Other unit-linked plans: the opening line follows the inputs, the six points come from the plan's own brochure.
@@ -2123,9 +2277,7 @@ var PLANS = (function(){
     if (cfg.lead==='pension') lead = payLine(p) + ' At an assumed return of 4% a year your retirement fund could be <b>' + short(r4.maturity) + '</b> at age ' + (p.age+p.pt) + ', and at 8% <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in.';
     else if (cfg.lead==='child') lead = payLine(p).replace(/\.$/, '') + ' for your child, now aged ' + p.child + '. At an assumed return of 4% a year the fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. You are covered for <b>' + short(r4.sa) + '</b>, and the plan carries on even if you are not there.';
     else lead = payLine(p) + ' At an assumed return of 4% a year your fund could grow to <b>' + short(r4.maturity) + '</b>, and at 8% to <b>' + short(r8.maturity) + '</b>, on ' + short(r4.paid) + ' paid in. Your family is covered for <b>' + short(r4.sa) + '</b> from the first day.';
-    $('pitch').innerHTML = '<h2>What ' + esc(pl.name) + ' does for you</h2><p class="lead">' + lead + '</p>' + tilesHtml(pl.tiles) +
-      (pl.more ? '<p class="also"><b>There is more for you:</b> ' + esc(pl.more) + '</p>' : '') +
-      '<p class="also"><b>Please note:</b> ' + esc(pl.note) + '</p>';
+    setPitch(pl.name, lead, pl.tiles, pl.more ? esc(pl.more) : '', esc(pl.note));
   }
 
   function load(i){
@@ -2202,10 +2354,7 @@ var PLANS = (function(){
   });
   $('mini').addEventListener('click', function(){ setTab('results', true); });
   function renderStaticPitch(pl){
-    $('pitch').innerHTML = '<h2>What ' + esc(pl.name) + ' does for you</h2>' +
-      '<p class="lead">' + pl.lead + '</p>' + tilesHtml(pl.tiles) +
-      (pl.more ? '<p class="also"><b>There is more for you:</b> ' + esc(pl.more) + '</p>' : '') +
-      '<p class="also"><b>Please note:</b> ' + esc(pl.note) + '</p>';
+    setPitch(pl.name, pl.lead, pl.tiles, pl.more ? esc(pl.more) : '', esc(pl.note));
   }
   function renderGlance(pl){
     $('glance-sub').textContent = 'SBI Life – ' + pl.name + ' · UIN ' + pl.uin;
